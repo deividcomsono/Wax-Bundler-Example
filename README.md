@@ -2,15 +2,9 @@
 
 Description
 
-## Uploading your work
+## Prerequisites
 
-- `git clone` this repository (preferred) or fork this repository to a **private** repository
-
-> [!CAUTION]
-> If the fork is not private, I **will** kill you.
-
-- Make your changes
-- Create a [Pull Request](https://github.com/FutureSoftworks/luau-private/compare)
+- `git clone` this repository (preferred) or fork this repository
 
 To enhance your work environment, we recommend installing the [Luau LSP Extension](https://marketplace.visualstudio.com/items?itemName=JohnnyMorganz.luau-lsp). We suggest using Version 1.31.1, as it is the version we utilize.
 
