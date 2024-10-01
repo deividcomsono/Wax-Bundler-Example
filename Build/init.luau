@@ -23,4 +23,4 @@ Luau.load(Network.request(FileLink).body, {
     debugName = "Wax",
 })()
 
-FileSystem.writeFile("Distribution\\Script.luau", `{FileSystem.readFile("Build\\Header.luau")}\n\n{FileSystem.readFile("Distribution\\Script.luau")}`)
+FileSystem.writeFile("Distribution/Script.luau", `{FileSystem.readFile("Build/Header.luau")}\n\n{FileSystem.readFile("Distribution/Script.luau")}`)
