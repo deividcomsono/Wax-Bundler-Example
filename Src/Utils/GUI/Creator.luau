@@ -7,7 +7,7 @@ local ThemeManager = loadstring(game:HttpGet(repo .. "addons/ThemeManager.lua"))
 local SaveManager = loadstring(game:HttpGet(repo .. "addons/SaveManager.lua"))()
 
 shared.Toggles = getgenv().Linoria.Toggles
-shared.Options = getgenv().Linoria.Toggles
+shared.Options = getgenv().Linoria.Options
 
 getgenv()._internal_unload_mspaint = function()
     task.spawn(shared.Library.Unload)
@@ -15,7 +15,7 @@ end
 
 function UICreator:CreateWindow()
     local Window = shared.Library:CreateWindow({
-        Title = "mspaint v2 | " .. shared.PlaceName,
+        Title = "mspaint v3 | " .. shared.ScriptName,
         Center = true,
         AutoShow = true,
         Resizable = true,
@@ -24,6 +24,26 @@ function UICreator:CreateWindow()
         TabPadding = 2,
         MenuFadeTime = 0
     })
+
+    --// Notificatins \\--
+    shared.NotifyStyle = "Linoria"
+    shared.Notify = require("Notify")
+
+    --// Unload Handler \\--
+    shared.Library:OnUnload(function()
+        print("Unloading...")
+
+        shared.Fly:Stop()
+
+        for _, connection in pairs(shared.Connections) do
+            connection:Disconnect()
+        end
+        
+        getgenv().mspaint_loading = false
+        getgenv().mspaint_loaded = false
+        shared.Library.Unloaded = true
+        print("Unloaded!")
+    end)
 
     return Window
 end
@@ -34,6 +54,7 @@ function UICreator:CreateSettingsTab()
     local MenuGroup = SettingsTab:AddLeftGroupbox("Menu")
     local CreditsGroup = SettingsTab:AddRightGroupbox("Credits")
 
+    MenuGroup:AddToggle("ExecuteOnTeleport", { Default = false, Text = "Execute On Teleport" })
     MenuGroup:AddToggle("KeybindMenuOpen", { Default = false, Text = "Open Keybind Menu", Callback = function(value) shared.Library.KeybindFrame.Visible = value end})
     MenuGroup:AddToggle("ShowCustomCursor", {Text = "Custom Cursor", Default = true, Callback = function(Value) shared.Library.ShowCustomCursor = Value end})
     MenuGroup:AddDivider()
@@ -74,7 +95,14 @@ function UICreator:CreateSettingsTab()
     ThemeManager:ApplyToTab(SettingsTab)
 
     SaveManager:LoadAutoloadConfig()
-    
+
+    shared.Library:GiveSignal(shared.LocalPlayer.OnTeleport:Connect(function()
+        if not shared.Toggles.ExecuteOnTeleport.Value or getgenv().queued_to_teleport then return end
+
+        getgenv().queued_to_teleport = true
+        queue_on_teleport([[ print("yooo GET OUT") ]]) -- TODO: change to loadstring
+    end))
+
     return SettingsTab
 end
 

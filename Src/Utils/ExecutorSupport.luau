@@ -35,7 +35,7 @@ test("loadfile", loadfile, false)
 test("queue_on_teleport", queue_on_teleport, false)
 
 test("require", function()
-    wax.require(shared.Players.LocalPlayer:WaitForChild("PlayerScripts", math.huge):WaitForChild("PlayerModule", 5)) -- ReplicatedStorage:WaitForChild("ModuleScript")
+    wax.require(shared.LocalPlayer:WaitForChild("PlayerScripts", math.huge):WaitForChild("PlayerModule", 5)) -- ReplicatedStorage:WaitForChild("ModuleScript")
 end)
 test("hookmetamethod", function()
     local object = setmetatable({}, { __index = newcclosure(function() return false end), __metatable = "Locked!" })
@@ -136,7 +136,7 @@ if not isnetworkowner then
         return part.ReceiveAge == 0
     end
     
-    shared.isnetworkowner = isnetowner;
+    shared.isnetworkowner = isnetowner
 end
 
 --// Load \\--

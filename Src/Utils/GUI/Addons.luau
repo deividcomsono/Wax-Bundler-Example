@@ -148,13 +148,13 @@ task.spawn(function()
 
             addon.Name = addon.Name:gsub("%s+", "")
             if typeof(addon.Title) ~= "string" then
-                addon.Title = addon.Name;
+                addon.Title = addon.Name
             end
 
             if not AddonTab then createAddonTab(true) end
             
-            local AddonGroupbox = LastGroupbox == "Right" and AddonTab:AddLeftGroupbox(addon.Title) or AddonTab:AddRightGroupbox(addon.Title);
-            LastGroupbox = LastGroupbox == "Right" and "Left" or "Right";
+            local AddonGroupbox = if LastGroupbox == "Right" then AddonTab:AddLeftGroupbox(addon.Title) else AddonTab:AddRightGroupbox(addon.Title);
+            LastGroupbox = if LastGroupbox == "Right" then "Left" else "Right";
             if typeof(addon.Description) == "string" then
                 AddonGroupbox:AddLabel(addon.Description, true)
             end
