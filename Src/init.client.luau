@@ -1,7 +1,10 @@
-if getgenv().mspaint_loading then  print("[mspaint] Loading stopped. (ERROR: Loading)") return end
-if getgenv().mspaint_loaded then print("[mspaint] Loading stopped. (ERROR: Already loaded)") return end
+if getgenv().mspaint_loading then  print("[mspaint] Loading stopped. (ERROR: Loading)"); return end
+if getgenv().mspaint_loaded then print("[mspaint] Loading stopped. (ERROR: Already loaded)"); return end
 
 getgenv().mspaint_loading = true
+
+--// Loading Wait \\--
+if not game:IsLoaded() then game.Loaded:Wait() end
 
 --// Services \\--
 local Services = require("Utils/Services")
@@ -17,7 +20,8 @@ Services:GetServices({
 
     "HttpService",
     "RunService",
-    "SoundService"
+    "SoundService",
+    "TeleportService"
 })
 
 --// Utils \\--
@@ -27,6 +31,10 @@ end
 
 if not wax.shared.BloxstrapRPC then
     wax.shared.BloxstrapRPC = require("Utils/BloxstrapRPC")
+end
+
+if not wax.shared.FileHelper then
+    wax.shared.FileHelper = require("Utils/FileHelper")
 end
 
 --// mspaint Loader \\--
@@ -55,9 +63,26 @@ if not wax.shared.GotPlace then
 end
 
 --// Global functions \\--
-shared.Functions = {}
+shared.Script = {
+    Functions = {}
+}
 
-shared.EnforceTypes = require("Utils/EnforceTypes")
+shared.Script.Functions.EnforceTypes = function(args, template)
+    args = if typeof(args) == "table" then args else {}
+
+    for key, value in pairs(template) do
+        local argValue = args[key]
+
+        if argValue == nil or (value ~= nil and typeof(argValue) ~= typeof(value)) then
+            args[key] = value
+        elseif typeof(value) == "table" then
+            args[key] = shared.Script.Functions.EnforceTypes(argValue, value)
+        end
+    end
+
+    return args
+end
+
 shared.Logs = require("Utils/Logs")
 shared.Connect = require("Utils/Connections")
 
@@ -71,6 +96,8 @@ shared.PlayerScripts = shared.LocalPlayer.PlayerScripts
 shared.Fly = require("Utils/Universal/Fly")
 shared.ControlModule = require("Utils/Universal/ControlModule")
 
+shared.RBXGeneral = shared.TextChatService.TextChannels.RBXGeneral
+
 --// Load \\--
 shared.Connect:GiveSignal(workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
     shared.Camera = workspace.CurrentCamera
@@ -79,7 +106,7 @@ end))
 local UICreator = require("Utils/GUI/Creator")
 shared.Window = UICreator:CreateWindow()
 
-require("Places/" .. shared.ScriptLoader)
+require("Places/Loaders/" .. shared.ScriptLoader)
 
 UICreator:CreateSettingsTab()
 require("Utils/GUI/Addons")

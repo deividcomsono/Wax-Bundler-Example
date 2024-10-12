@@ -12,7 +12,7 @@ function Doors:Alert(unsafeOptions)
     mainUI = mainUI or playerGui:WaitForChild("MainUI", 2.5)
     if not mainUI then return end
 
-    local options = shared.EnforceTypes(unsafeOptions, {
+    local options = shared.Script.Functions.EnforceTypes(unsafeOptions, {
         Title = "No Title",
         Description = "No Text",
         Reason = "",

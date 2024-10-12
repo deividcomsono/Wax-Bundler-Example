@@ -1,11 +1,10 @@
 -- Addons
-if getgenv().mspaint_disable_addons or getgenv().mspaint_addons_activated then return end
+if getgenv().mspaint_disable_addons or getgenv().mspaint_addons_activated then 
+    return {}
+end
 
-print("fodase")
 task.spawn(function()
-    local supportsFileSystem = (wax.shared.ExecutorSupport["isfile"] and wax.shared.ExecutorSupport["delfile"] and wax.shared.ExecutorSupport["listfiles"] and wax.shared.ExecutorSupport["writefile"] and wax.shared.ExecutorSupport["makefolder"] and wax.shared.ExecutorSupport["isfolder"])
-    
-    if not supportsFileSystem then
+    if not ExecutorSupport["_SupportsFileSystem"] then
         warn("[mspaint] Your executor doesn't support the FileSystem API. Addons will not work.")
         return
     end
@@ -95,6 +94,7 @@ task.spawn(function()
         end
 
         warn("[mspaint] Element '" .. tostring(Element.Name) .. " (" .. tostring(Element.Type) .. ")' didn't load: Invalid element type.")
+        return;
     end
     
     local AddonTab, LastGroupbox = nil, "Right"
@@ -181,3 +181,5 @@ task.spawn(function()
     
     createAddonTab(containAddonsLoaded)
 end)
+
+return {}

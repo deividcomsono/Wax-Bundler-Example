@@ -17,7 +17,7 @@ end
 function Linoria:Notify(options)
     if not shared.Library then return warn("No Linoria library") end
     
-    options = shared.EnforceTypes(options, {
+    options = shared.Script.Functions.EnforceTypes(options, {
         Description = "No Message",
         Time = 5,
     })

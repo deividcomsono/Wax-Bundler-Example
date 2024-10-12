@@ -63,7 +63,7 @@ test("firesignal", function()
     assert(fired, "Failed to fire a BindableEvent")
 end)
 local canFirePrompt = test("fireproximityprompt", function()
-    local prompt = Instance.new("ProximityPrompt", Instance.new("Part", Workspace))
+    local prompt = Instance.new("ProximityPrompt", Instance.new("Part", shared.Workspace))
     local triggered = false
 
     prompt.Triggered:Once(function() triggered = true end)
@@ -125,6 +125,9 @@ if not canFirePrompt then
     shared.forcefireproximityprompt = function(prompt)
         return fireProximityPrompt(prompt, true)
     end
+else
+    shared.fireproximityprompt = fireproximityprompt
+    shared.forcefireproximityprompt = fireproximityprompt
 end
 
 if not isnetworkowner then
@@ -137,13 +140,17 @@ if not isnetworkowner then
     end
     
     shared.isnetworkowner = isnetowner
+else
+    shared.isnetworkowner = isnetworkowner
 end
 
 --// Load \\--
-
 ExecutorSupport["_ExecutorName"] = executorName
+ExecutorSupport["_SupportsFileSystem"] = (ExecutorSupport["isfile"] and ExecutorSupport["delfile"] and ExecutorSupport["listfiles"] and ExecutorSupport["writefile"] and ExecutorSupport["makefolder"] and ExecutorSupport["isfolder"])
+
 for name, result in pairs(ExecutorSupport) do
     print(tostring(name) .. ":", tostring(result))
 end
+
 
 return ExecutorSupport
