@@ -44,6 +44,7 @@ Script.Temp = {
     Guidance = {},
     PaintingDebounce = {},
     UsedBreakers = {},
+    VoidGlitchNotifiedRooms = {}
 }
 
 Script.FakeRevive = {
@@ -76,6 +77,16 @@ Script.SuffixPrefixes = {
 
 Script.PrettyFloorName = {
     ["Fools"] = "Super Hard Mode",
+    ["Retro"] = "Retro Mode"
+}
+
+Script.FloorImages = {
+    ["Hotel"] = 16875079348,
+    ["Mines"] = 138779629462354,
+    ["Retro"] = 16992279648,
+    ["Rooms"] = 16874821428,
+    ["Fools"] = 17045908353,
+    ["Backdoor"] = 16874352892
 }
 
 Script.EntityTable = {
@@ -276,6 +287,15 @@ Script.HideTimeValues = {
     {min = 90, max = 99, a = -1/6, b = 90, c = 15}
 }
 
+Script.VoidThresholdValues = {
+    ["Hotel"] = 3,
+    ["Mines"] = 3,
+    ["Retro"] = 3,
+    ["Rooms"] = 4,
+    ["Fools"] = 3,
+    ["Backdoor"] = 2,
+}
+
 Script.MinecartPathNodeColor = {
     Disabled = nil,
     Red = Color3.new(1, 0, 0),
@@ -370,6 +390,27 @@ function Script.Functions.RandomString()
     return table.concat(array)
 end
 
+function Script.Functions.NotifyGlitch()
+    if Options.NotifyEntity.Value["Void/Glitch"] and Script.LatestRoom.Value > Script.CurrentRoom + Script.VoidThresholdValues[Script.Floor.Value] and Script.Alive and not table.find(Script.Temp.VoidGlitchNotifiedRooms, Script.CurrentRoom) then
+        table.insert(Script.Temp.VoidGlitchNotifiedRooms, Script.CurrentRoom)
+
+        local message = "Void/Glitch is coming once the next door is opened."
+
+        if Script.IsRooms then
+            local roomsLeft = (6 - (Script.LatestRoom.Value - Script.CurrentRoom))
+            message = "Void/Glitch is coming " .. (if roomsLeft == 0 then "once the next door is opened." else "in " .. roomsLeft .. " rooms") .. "."
+        end
+
+        shared.Notify:Alert({
+            Title = "ENTITIES",
+            Description = message,
+            Reason = "Go to the next room to avoid it.",
+
+            Warning = true
+        })
+    end
+end
+
 function Script.Functions.UpdateRPC()
     if not wax.shared.BloxstrapRPC then return end
 
@@ -395,6 +436,7 @@ function Script.Functions.UpdateRPC()
         details = "Playing DOORS [ mspaint v2 ]",
         state = roomNumberPrefix .. prettifiedRoomNumber .. " (" .. if Script.PrettyFloorName[Script.Floor.Value] then Script.PrettyFloorName[Script.Floor.Value] else ("The " .. Script.Floor.Value)  .. ")",
         largeImage = {
+            assetId = Script.FloorImages[Script.Floor.Value] or 16875079348,
             hoverText = "Using mspaint v2"
         },
         smallImage = {
@@ -433,6 +475,12 @@ Script.RemotesFolder = if not Script.IsFools then shared.ReplicatedStorage:WaitF
 
 --// Player DOORS Variables \\--
 Script.CurrentRoom = shared.LocalPlayer:GetAttribute("CurrentRoom") or 0
+
+if not workspace.CurrentRooms:FindFirstChild(tostring(Script.CurrentRoom)) then
+    Script.CurrentRoom = Script.LatestRoom.Value
+    shared.LocalPlayer:SetAttribute("CurrentRoom", Script.CurrentRoom)
+end
+
 Script.NextRoom = Script.CurrentRoom + 1
 
 Script.MainUI = shared.PlayerGui:WaitForChild("MainUI")
@@ -904,12 +952,18 @@ if workspace.CurrentRooms:FindFirstChild(Script.CurrentRoom) then
     task.spawn(Script.Functions.SetupCurrentRoomConnection, workspace.CurrentRooms[Script.CurrentRoom])
 end
 
+shared.Connect:GiveSignal(Script.LatestRoom:GetPropertyChangedSignal("Value"):Connect(function()
+    Script.Functions.NotifyGlitch()
+end))
+
 shared.Connect:GiveSignal(shared.LocalPlayer:GetAttributeChangedSignal("CurrentRoom"):Connect(function()
     if Script.CurrentRoom == shared.LocalPlayer:GetAttribute("CurrentRoom") then return end
 
     Script.CurrentRoom = shared.LocalPlayer:GetAttribute("CurrentRoom")
     Script.NextRoom = Script.CurrentRoom + 1
     task.spawn(Script.Functions.UpdateRPC)
+
+    Script.Functions.NotifyGlitch()
 
     local currentRoomModel = workspace.CurrentRooms:FindFirstChild(Script.CurrentRoom)
     local nextRoomModel = workspace.CurrentRooms:FindFirstChild(Script.NextRoom)
@@ -1359,7 +1413,7 @@ shared.Library:OnUnload(function()
     end
 
     if Script.Alive then
-        shared.Lighting.Ambient = workspace.CurrentRooms[shared.LocalPlayer:GetAttribute("CurrentRoom")]:GetAttribute("Ambient")
+        shared.Lighting.Ambient = workspace.CurrentRooms[Script.CurrentRoom]:GetAttribute("Ambient")
     else
         shared.Lighting.Ambient = Color3.new(0, 0, 0)
     end

@@ -260,7 +260,7 @@ function Script.Functions.SetupCharacterConnection(newCharacter)
         end
 
         Script.FeatureConnections.RootPart["Touched"] = shared.RootPart.Touched:Connect(function(touchedPart)
-            if tonumber(touchedPart) and touchedPart.Name == touchedPart.Parent.Name then
+            if tonumber(touchedPart.Name) and touchedPart.Name == touchedPart.Parent.Name then
                 shared.LocalPlayer:SetAttribute("CurrentRoom", tonumber(touchedPart.Name))
             end
         end)

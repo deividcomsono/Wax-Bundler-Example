@@ -438,7 +438,7 @@ elseif Script.IsRooms then
             return GoalLocker.PrimaryPart
         end
 
-        return workspace.CurrentRooms[Script.LatestRoom.Value].Door.Door
+        return workspace.CurrentRooms[Script.LatestRoom.Value].RoomExit
     end
 
     local _internal_mspaint_pathfinding_nodes = Instance.new("Folder", shared.Workspace) do
