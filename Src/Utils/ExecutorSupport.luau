@@ -144,6 +144,8 @@ else
     shared.isnetworkowner = isnetworkowner
 end
 
+shared.firetouch = firetouchinterest or firetouchtransmitter;
+
 --// Load \\--
 ExecutorSupport["_ExecutorName"] = executorName
 ExecutorSupport["_SupportsFileSystem"] = (ExecutorSupport["isfile"] and ExecutorSupport["delfile"] and ExecutorSupport["listfiles"] and ExecutorSupport["writefile"] and ExecutorSupport["makefolder"] and ExecutorSupport["isfolder"])

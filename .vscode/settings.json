@@ -13,5 +13,10 @@
     "luau-lsp.ignoreGlobs": [
         
     ],
-    "rerun.command": "lune run Build bundle input='default.project.json' minify=true output='Distribution/Script.luau' env-name='Script' darklua-config-path='Build/DarkLua.json' temp-dir-base='Distribution' verbose=true"
+    "rerun.command": "lune run Build bundle input='default.project.json' minify=true output='Distribution/Script.luau' env-name='Script' darklua-config-path='Build/DarkLua.json' temp-dir-base='Distribution' verbose=true",
+    "robloxLsp.diagnostics.globals": [
+        "firesignal",
+        "wax",
+        "getgenv"
+    ]
 }

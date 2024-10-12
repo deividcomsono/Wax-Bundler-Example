@@ -5,26 +5,14 @@ local Options = shared.Options
 --// Variables \\--
 local Script = shared.Script
 
---// Assets Functions \\--
-function Script.Functions.GetShortName(entityName: string)
-    if EntityTable.ShortNames[entityName] then
-        return EntityTable.ShortNames[entityName]
-    end
-
-    for suffix, fix in pairs(SuffixPrefixes) do
-        entityName = entityName:gsub(suffix, fix)
-    end
-
-    return entityName
-end
-
+--// Functions \\--
 function Script.Functions.PromptCondition(prompt)
     local modelAncestor = prompt:FindFirstAncestorOfClass("Model")
     return 
         prompt:IsA("ProximityPrompt") and (
-            not table.find(PromptTable.Excluded.Prompt, prompt.Name) 
-            and not table.find(PromptTable.Excluded.Parent, prompt.Parent and prompt.Parent.Name or "") 
-            and not (table.find(PromptTable.Excluded.ModelAncestor, modelAncestor and modelAncestor.Name or ""))
+            not table.find(Script.PromptTable.Excluded.Prompt, prompt.Name) 
+            and not table.find(Script.PromptTable.Excluded.Parent, prompt.Parent and prompt.Parent.Name or "") 
+            and not (table.find(Script.PromptTable.Excluded.ModelAncestor, modelAncestor and modelAncestor.Name or ""))
         )
 end
 
@@ -64,7 +52,7 @@ function Script.Functions.ChildCheck(child)
             end
         end)
 
-        table.insert(PromptTable.GamePrompts, child)
+        table.insert(Script.PromptTable.GamePrompts, child)
     end
 
     if child:IsA("Model") then
@@ -72,7 +60,7 @@ function Script.Functions.ChildCheck(child)
             Script.Functions.SolveBreakerBox(child)
         end
 
-        if isMines and Toggles.TheMinesAnticheatBypass.Value and child.Name == "Ladder" then
+        if Script.IsMines and Toggles.TheMinesAnticheatBypass.Value and child.Name == "Ladder" then
             Script.Functions.ESP({
                 Type = "None",
                 Object = child,
@@ -89,13 +77,13 @@ function Script.Functions.ChildCheck(child)
             Script.Functions.DisableDupe(child, true, child:GetAttribute("LoadModule") == "SpaceSideroom")
         end
 
-        if (isHotel or isFools) and (child.Name == "ChandelierObstruction" or child.Name == "Seek_Arm") and Toggles.AntiSeekObstructions.Value then
+        if (Script.IsHotel or Script.IsFools) and (child.Name == "ChandelierObstruction" or child.Name == "Seek_Arm") and Toggles.AntiSeekObstructions.Value then
             for i,v in pairs(child:GetDescendants()) do
                 if v:IsA("BasePart") then v.CanTouch = false end
             end
         end
 
-        if isFools then
+        if Script.IsFools then
             if Toggles.FigureGodmodeFools.Value and child.Name == "FigureRagdoll" then
                 for i, v in pairs(child:GetDescendants()) do
                     if v:IsA("BasePart") then
@@ -105,7 +93,7 @@ function Script.Functions.ChildCheck(child)
 
                         -- woudn't want figure to just dip into the ground
                         task.spawn(function()
-                            repeat task.wait() until (latestRoom.Value == 50 or latestRoom.Value == 100)
+                            repeat task.wait() until (Script.LatestRoom.Value == 50 or Script.LatestRoom.Value == 100)
                             task.wait(5)
                             v.CanCollide = false
                         end)
@@ -128,7 +116,7 @@ function Script.Functions.ChildCheck(child)
             child.Reflectance = 0
         end
 
-        if isMines then
+        if Script.IsMines then
             if Toggles.AntiBridgeFall.Value and child.Name == "PlayerBarrier" and child.Size.Y == 2.75 and (child.Rotation.X == 0 or child.Rotation.X == 180) then
                 local clone = child:Clone()
                 clone.CFrame = clone.CFrame * CFrame.new(0, 0, -5)
@@ -146,7 +134,7 @@ function Script.Functions.ChildCheck(child)
     elseif child:IsA("Decal") and Toggles.AntiLag.Value then
         if not child:GetAttribute("Transparency") then child:SetAttribute("Transparency", child.Transparency) end
 
-        if not table.find(SlotsName, child.Name) then
+        if not table.find(Script.SlotsName, child.Name) then
             child.Transparency = 1
         end
     end
@@ -177,7 +165,7 @@ function Script.Functions.GetAllPromptsWithCondition(condition)
     assert(typeof(condition) == "function", "Expected a function as condition argument but got " .. typeof(condition))
     
     local validPrompts = {}
-    for _, prompt in pairs(PromptTable.GamePrompts) do
+    for _, prompt in pairs(Script.PromptTable.GamePrompts) do
         if not prompt or not prompt:IsDescendantOf(workspace) then continue end
 
         local success, returnData = pcall(function()

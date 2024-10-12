@@ -294,8 +294,11 @@ Script.MinecartPathfind = {
 
 --// Player Variables \\--
 shared.Character = shared.LocalPlayer.Character or shared.LocalPlayer.CharacterAdded:Wait()
-shared.Collision = nil
-shared.CollisionClone = nil
+shared.Humanoid = nil
+Script.Collision = nil
+Script.CollisionClone = nil
+
+Script.Alive = shared.LocalPlayer:GetAttribute("Alive")
 
 --// DOORS Variables \\--
 Script.EntityModules = shared.ReplicatedStorage:WaitForChild("ClientModules"):WaitForChild("EntityModules")
@@ -306,62 +309,53 @@ Script.LatestRoom = Script.GameData:WaitForChild("LatestRoom")
 
 Script.LiveModifiers = shared.ReplicatedStorage:WaitForChild("LiveModifiers")
 
-lsMines = floor.Value == "Mines"
-lsRooms = floor.Value == "Rooms"
-lsHotel = floor.Value == "Hotel"
-lsBackdoor = floor.Value == "Backdoor"
-lsFools = floor.Value == "Fools"
-lsRetro = floor.Value == "Retro"
+Script.IsMines = Script.Floor.Value == "Mines"
+Script.IsRooms = Script.Floor.Value == "Rooms"
+Script.IsHotel = Script.Floor.Value == "Hotel"
+Script.IsBackdoor = Script.Floor.Value == "Backdoor"
+Script.IsFools = Script.Floor.Value == "Fools"
+Script.IsRetro = Script.Floor.Value == "Retro"
 
-local floorReplicated = if not isFools then shared.ReplicatedStorage:WaitForChild("FloorReplicated") else nil
-local remotesFolder = if not isFools then shared.ReplicatedStorage:WaitForChild("RemotesFolder") else shared.ReplicatedStorage:WaitForChild("EntityInfo")
+Script.FloorReplicated = if not Script.IsFools then shared.ReplicatedStorage:WaitForChild("FloorReplicated") else nil
+Script.RemotesFolder = if not Script.IsFools then shared.ReplicatedStorage:WaitForChild("RemotesFolder") else shared.ReplicatedStorage:WaitForChild("EntityInfo")
 
 --// Player DOORS Variables \\--
-local currentRoom = shared.LocalPlayer:GetAttribute("CurrentRoom") or 0
-local nextRoom = currentRoom + 1
+Script.CurrentRoom = shared.LocalPlayer:GetAttribute("CurrentRoom") or 0
+Script.NextRoom = Script.CurrentRoom + 1
 
-local mainUI = shared.PlayerGui:WaitForChild("MainUI")
-local mainGame = mainUI:WaitForChild("Initiator"):WaitForChild("Main_Game")
-local mainGameSrc = if wax.shared.ExecutorSupport["require"] then require(mainGame) else nil
+Script.MainUI = shared.PlayerGui:WaitForChild("MainUI")
+Script.MainGame = Script.MainUI:WaitForChild("Initiator"):WaitForChild("Main_Game")
+Script.MainGameSrc = if wax.shared.ExecutorSupport["require"] then require(Script.MainGame) else nil
 
 --// Other Variables \\--
-local speedBypassing = false
-
-local lastSpeed = 0
-local bypassed = false
-
---// Types \\--
-type ESP = {
-    Color: Color3,
-    IsEntity: boolean,
-    IsDoubleDoor: boolean,
-    Object: Instance,
-    Offset: Vector3,
-    Text: string,
-    TextParent: Instance,
-    Type: string,
-}
-
-type tPathfind = {
-    esp: boolean,
-    room_number: number, -- the room number
-    real: table,
-    fake: table,
-    destroyed: boolean -- if the pathfind was destroyed for the Teleport
-}
-
-type tGroupTrack = {
-    nodes: table,
-    hasStart: boolean,
-    hasEnd: boolean,
-}
+Script.SpeedBypassing = false
+Script.LastSpeed = 0
+Script.Bypassed = false
 
 --// Functions \\--
-require("Places/Utils/Doors/Doors/ESP")
+function LoadScript(scriptType: "Utils" | "Tabs", name: string)
+    return require(script.Parent.Parent.Parent[scriptType].Doors.Doors[name])
+end
+LoadScript("Utils", "ESP")
+LoadScript("Utils", "Assets")
+LoadScript("Utils", "Entities")
 
-local Tabs = {
-    Main = shared.Window:AddTab("Main")
+LoadScript("Utils", "AutoWardrobe")
+LoadScript("Utils", "BreakerBox")
+LoadScript("Utils", "Padlock")
+LoadScript("Utils", "Minecarts")
+
+LoadScript("Utils", "ConnectionsFuncs")
+
+--// Tabs \\--
+Script.Tabs = {
+    Main = shared.Window:AddTab("Main"),
+    Exploits = shared.Window:AddTab("Exploits"),
+    Visuals = shared.Window:AddTab("Visuals"),
+    Floor = shared.Window:AddTab("Floor")
 }
+
+LoadScript("Tabs", "Main")
 
 local PlayerGroupBox = Tabs.Main:AddLeftGroupbox("Player") do
     PlayerGroupBox:AddToggle("Fly", {

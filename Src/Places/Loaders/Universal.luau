@@ -108,11 +108,14 @@ shared.Connect:GiveSignal(shared.RunService.RenderStepped:Connect(function()
     if shared.Character then
         if shared.Humanoid then
             if Toggles.SpeedHack.Value then shared.Humanoid.WalkSpeed = Options.WalkSpeed.Value end
-
+            if Toggles.JumpPowerHack.Value then shared.Humanoid.JumpPower = Options.JumpPower.Value end
         end
 
-        for _, part in pairs(shared.Character:GetDescendants()) do
-
+        if Toggles.Noclip.Value then
+            for _, part in pairs(shared.Character:GetDescendants()) do
+                if not part:IsA("BasePart") then continue end
+                part.CanCollide = false
+            end        
         end
     end
 end))
