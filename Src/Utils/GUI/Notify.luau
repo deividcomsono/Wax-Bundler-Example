@@ -22,7 +22,12 @@ function Notify:Alert(options)
 
         Linoria:Alert(options)
     elseif shared.NotifyStyle == "Doors" and shared.ScriptName == "DOORS" then
-        Doors:Alert(options)
+        if options.Warning then
+            options["Warning"] = nil
+            Doors:Alert(options)
+        else
+            Doors:Notify(options)
+        end
     end
 end
 
