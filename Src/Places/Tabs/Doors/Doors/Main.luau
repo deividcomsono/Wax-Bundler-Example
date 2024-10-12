@@ -138,7 +138,7 @@ local AutomationGroupBox = Tabs.Main:AddRightGroupbox("Automation") do
         Default = false,
         Tooltip = "Might fail with multiple entities (Rush & Ambush, 3+ Rush spawns)",
         Visible = not Script.IsRetro,
-        IsRisky = true
+        Risky = true
     }):AddKeyPicker("AutoWardrobeKey", {
         Mode = "Toggle",
         Default = "Q",
@@ -248,26 +248,28 @@ end
 Toggles.EnableJump:OnChanged(function(value)
     if Script.IsFools then return end
 
-    if Script.Character then
-        Script.Character:SetAttribute("CanJump", value)
+    if shared.Character then
+        shared.Character:SetAttribute("CanJump", value)
     end
 
-    if not value and not Toggles.SpeedBypass.Value and Options.WalkSpeed.Max ~= 22 and not Script.FakeRevive.Enabled then
-        Options.WalkSpeed:SetMax(22)
+    if Toggles.SpeedBypass ~= nil then
+        if not value and not Toggles.SpeedBypass.Value and Options.WalkSpeed.Max ~= 22 and not Script.FakeRevive.Enabled then
+            Options.WalkSpeed:SetMax(22)
+        end
     end
 end)
 
 Toggles.NoAccel:OnChanged(function(value)
-    if not Script.RootPart then return end
+    if not shared.RootPart then return end
 
     if value then
-        Script.Temp.NoAccelValue = Script.RootPart.CustomPhysicalProperties.Density
+        Script.Temp.NoAccelValue = shared.RootPart.CustomPhysicalProperties.Density
         
-        local existingProperties = Script.RootPart.CustomPhysicalProperties
-        Script.RootPart.CustomPhysicalProperties = PhysicalProperties.new(100, existingProperties.Friction, existingProperties.Elasticity, existingProperties.FrictionWeight, existingProperties.ElasticityWeight)
+        local existingProperties = shared.RootPart.CustomPhysicalProperties
+        shared.RootPart.CustomPhysicalProperties = PhysicalProperties.new(100, existingProperties.Friction, existingProperties.Elasticity, existingProperties.FrictionWeight, existingProperties.ElasticityWeight)
     else
-        local existingProperties = Script.RootPart.CustomPhysicalProperties
-        Script.RootPart.CustomPhysicalProperties = PhysicalProperties.new(Script.Temp.NoAccelValue, existingProperties.Friction, existingProperties.Elasticity, existingProperties.FrictionWeight, existingProperties.ElasticityWeight)
+        local existingProperties = shared.RootPart.CustomPhysicalProperties
+        shared.RootPart.CustomPhysicalProperties = PhysicalProperties.new(Script.Temp.NoAccelValue, existingProperties.Friction, existingProperties.Elasticity, existingProperties.FrictionWeight, existingProperties.ElasticityWeight)
     end
 end)
 

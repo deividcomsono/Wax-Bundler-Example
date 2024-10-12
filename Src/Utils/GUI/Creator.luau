@@ -38,7 +38,7 @@ function UICreator:CreateWindow()
         for _, connection in pairs(shared.Connections) do
             connection:Disconnect()
         end
-        
+
         getgenv().mspaint_loading = false
         getgenv().mspaint_loaded = false
         shared.Library.Unloaded = true

@@ -1,4 +1,5 @@
 local ExecutorSupport = {}
+local ExecutorSupportInfo = {}
 
 local executorName = string.split(identifyexecutor() or "None", " ")[1]
 local brokenFeatures = {
@@ -10,15 +11,16 @@ local brokenFeatures = {
 function test(name: string, func: () -> (), shouldCallback: boolean)
     if typeof(brokenFeatures[executorName]) == "table" and table.find(brokenFeatures[executorName], name) then return false end -- garbage executor 🤯
     
-    local success = false
+    local success, errorMessage = false, nil
     if shouldCallback ~= false then
-        success = pcall(func)
+        success, errorMessage = pcall(func)
     else
         success = typeof(func) == "function"
     end
     
-    ExecutorSupport[name] = success
-    return success
+    ExecutorSupportInfo[name] = string.format("%s [%s]%s", (if success then "✅" else "❌"), name, (if errorMessage then (": " .. tostring(errorMessage)) else ""));
+    ExecutorSupport[name] = success;
+    return success;
 end
 
 test("readfile", readfile, false)
@@ -35,7 +37,7 @@ test("loadfile", loadfile, false)
 test("queue_on_teleport", queue_on_teleport, false)
 
 test("require", function()
-    wax.require(shared.LocalPlayer:WaitForChild("PlayerScripts", math.huge):WaitForChild("PlayerModule", 5)) -- ReplicatedStorage:WaitForChild("ModuleScript")
+    wax.require(shared.Players.LocalPlayer:WaitForChild("PlayerScripts", math.huge):WaitForChild("PlayerModule", 5)) -- ReplicatedStorage:WaitForChild("ModuleScript")
 end)
 test("hookmetamethod", function()
     local object = setmetatable({}, { __index = newcclosure(function() return false end), __metatable = "Locked!" })
@@ -151,8 +153,11 @@ ExecutorSupport["_ExecutorName"] = executorName
 ExecutorSupport["_SupportsFileSystem"] = (ExecutorSupport["isfile"] and ExecutorSupport["delfile"] and ExecutorSupport["listfiles"] and ExecutorSupport["writefile"] and ExecutorSupport["makefolder"] and ExecutorSupport["isfolder"])
 
 for name, result in pairs(ExecutorSupport) do
-    print(tostring(name) .. ":", tostring(result))
+    if ExecutorSupportInfo[name] ~= nil then 
+        print(ExecutorSupportInfo[name]) 
+    else
+        print("❓ [" .. tostring(name) .. "]", tostring(result))
+    end
 end
-
 
 return ExecutorSupport

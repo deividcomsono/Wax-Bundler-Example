@@ -24,6 +24,7 @@ function Script.Functions.EnableBreaker(breaker, value)
 end
 
 function Script.Functions.SolveBreakerBox(breakerBox)
+    if not Options.AutoBreakerSolverMethod then return end
     if not breakerBox then return end
 
     local code = breakerBox:FindFirstChild("Code", true)
@@ -32,7 +33,7 @@ function Script.Functions.SolveBreakerBox(breakerBox)
     repeat task.wait() until code.Text ~= "..." or not breakerBox:IsDescendantOf(workspace)
     if not breakerBox:IsDescendantOf(workspace) then return end
 
-    Script.Functions.Alert({
+    shared.Notify:Alert({
         Title = "Auto Breaker Solver",
         Description = "Solving the breaker box...",
         Reason = ""
@@ -40,8 +41,8 @@ function Script.Functions.SolveBreakerBox(breakerBox)
 
     if Options.AutoBreakerSolverMethod.Value == "Legit" then
         Script.Temp.UsedBreakers = {}
-        if Script.Connections["Reset"] then Script.Connections["Reset"]:Disconnect() end
-        if Script.Connections["Code"] then Script.Connections["Code"]:Disconnect() end
+        if shared.Connections["Reset"] then shared.Connections["Reset"]:Disconnect() end
+        if shared.Connections["Code"] then shared.Connections["Code"]:Disconnect() end
 
         local breakers = {}
         for _, breaker in pairs(breakerBox:GetChildren()) do
@@ -54,11 +55,11 @@ function Script.Functions.SolveBreakerBox(breakerBox)
         if code:FindFirstChild("Frame") then
             Script.Functions.AutoBreaker(code, breakers)
 
-            Script.Connections["Reset"] = correct:GetPropertyChangedSignal("Playing"):Connect(function()
+            shared.Connections["Reset"] = correct:GetPropertyChangedSignal("Playing"):Connect(function()
                 if correct.Playing then table.clear(Script.Temp.UsedBreakers) end
             end)
 
-            Script.Connections["Code"] = code:GetPropertyChangedSignal("Text"):Connect(function()
+            shared.Connections["Code"] = code:GetPropertyChangedSignal("Text"):Connect(function()
                 task.delay(0.1, Script.Functions.AutoBreaker, code, breakers)
             end)
         end
@@ -67,7 +68,7 @@ function Script.Functions.SolveBreakerBox(breakerBox)
             Script.RemotesFolder.EBF:FireServer()
         until not workspace.CurrentRooms["100"]:FindFirstChild("DoorToBreakDown")
 
-        Script.Functions.Alert({
+        shared.Notify:Alert({
             Title = "Auto Breaker Solver",
             Description = "The breaker box has been successfully solved.",
         })
@@ -79,7 +80,6 @@ function Script.Functions.AutoBreaker(code, breakers)
     if not tonumber(newCode) and newCode ~= "??" then return end
 
     local isEnabled = code.Frame.BackgroundTransparency == 0
-
     local breaker = breakers[newCode]
 
     if newCode == "??" and #Script.Temp.UsedBreakers == 9 then

@@ -4,7 +4,7 @@ if getgenv().mspaint_disable_addons or getgenv().mspaint_addons_activated then
 end
 
 task.spawn(function()
-    if not ExecutorSupport["_SupportsFileSystem"] then
+    if not wax.shared.ExecutorSupport["_SupportsFileSystem"] then
         warn("[mspaint] Your executor doesn't support the FileSystem API. Addons will not work.")
         return
     end

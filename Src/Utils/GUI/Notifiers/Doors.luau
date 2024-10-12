@@ -6,7 +6,7 @@ local playerGui = localPlayer.PlayerGui
 local mainUI
 
 --// Functions \\--
-function Doors:Alert(unsafeOptions)
+function Doors:Notify(unsafeOptions)
     assert(typeof(unsafeOptions) == "table", "Expected a table as options argument but got " .. typeof(unsafeOptions))
 
     mainUI = mainUI or playerGui:WaitForChild("MainUI", 2.5)
@@ -86,7 +86,7 @@ function Doors:Alert(unsafeOptions)
     end)
 end
 
-function Doors:Warn(options)
+function Doors:Alert(options)
     assert(typeof(options) == "table", "Expected a table as options argument but got " .. typeof(options))
 
     options["NotificationType"] = "WARNING"
@@ -95,5 +95,7 @@ function Doors:Warn(options)
 
     Doors:Notify(options)
 end
+
+function Doors:Warn(options) Doors:Alert(options) end
 
 return Doors

@@ -8,7 +8,6 @@ local Script = shared.Script
 --// Functions \\--
 function Script.Functions.GenerateAutoWardrobeExclusions(targetWardrobePrompt: ProximityPrompt)
     if not workspace.CurrentRooms:FindFirstChild(Script.CurrentRoom) then return {targetWardrobePrompt.Parent} end
-
     local ignore = { targetWardrobePrompt.Parent }
 
     if workspace.CurrentRooms[Script.CurrentRoom]:FindFirstChild("Assets") then
@@ -20,8 +19,14 @@ function Script.Functions.GenerateAutoWardrobeExclusions(targetWardrobePrompt: P
     return ignore
 end
 
-function Script.Functions.AutoWardrobe(child, index: number | nil) -- child = entity, ty upio
-    if not Toggles.AutoWardrobe.Value or not Script.Alive or not child or not child:IsDescendantOf(workspace) then
+function Script.Functions.AutoWardrobe(child, index: number | nil)
+    -- Entity check
+    if not child then return end
+    if not child:IsDescendantOf(workspace) then return end
+
+    -- Toggles check
+    if not Toggles.AutoWardrobeNotif or not Toggles.AutoWardrobe then return end
+    if not Toggles.AutoWardrobe.Value or not Script.Alive then
         index = index or table.find(Script.Temp.AutoWardrobeEntities, child)
         if index then
             table.remove(Script.Temp.AutoWardrobeEntities, index)
@@ -32,7 +37,7 @@ function Script.Functions.AutoWardrobe(child, index: number | nil) -- child = en
 
     local NotifPrefix = "Auto " .. Script.HidingPlaceName[Script.Floor.Value];
     task.spawn(function() 
-        Script.Functions.Log({
+        shared.Notify:Log({
             Title = NotifPrefix,
             Description = "Looking for a hiding place",
     
@@ -74,7 +79,7 @@ function Script.Functions.AutoWardrobe(child, index: number | nil) -- child = en
 
     -- Hide
     task.spawn(function() 
-        Script.Functions.Log({
+        shared.Notify:Log({
             Title = NotifPrefix,
             Description = "Starting...",
     
@@ -121,7 +126,7 @@ function Script.Functions.AutoWardrobe(child, index: number | nil) -- child = en
                 local isSafe = isSafeCheck()
                 if didPlayerSeeEntity == true and isSafe == true then
                     task.spawn(function() 
-                        Script.Functions.Log({
+                        shared.Notify:Log({
                             Title = NotifPrefix,
                             Description = "Exiting the locker, entity is far away.",
                             
@@ -133,7 +138,7 @@ function Script.Functions.AutoWardrobe(child, index: number | nil) -- child = en
                 else
                     if isSafe == true and not child:IsDescendantOf(workspace) then 
                         task.spawn(function() 
-                            Script.Functions.Log({
+                            shared.Notify:Log({
                                 Title = NotifPrefix,
                                 Description = "Exiting the locker, entity is deleted.",
                                 
@@ -146,9 +151,9 @@ function Script.Functions.AutoWardrobe(child, index: number | nil) -- child = en
                 end
 
                 if not Script.Alive then  
-                    if Toggles.AutoWardrobeNotif.Value then Script.Functions.Log("[" .. NotifPrefix .. "] Stopping (you died).") end             
+                    if Toggles.AutoWardrobeNotif.Value then shared.Notify:Log("[" .. NotifPrefix .. "] Stopping (you died).") end             
                     task.spawn(function() 
-                        Script.Functions.Log({
+                        shared.Notify:Log({
                             Title = NotifPrefix,
                             Description = "Stopping (you died)",
                             
@@ -164,14 +169,14 @@ function Script.Functions.AutoWardrobe(child, index: number | nil) -- child = en
         return true
     end
     local hide = function()
-        if (shared.Character:GetAttribute("Hiding") and Script.RootPart.Anchored) then return false end
+        if (shared.Character:GetAttribute("Hiding") and shared.RootPart.Anchored) then return false end
 
         getPrompt()
         repeat task.wait()
             atempts += 1
 
             shared.forcefireproximityprompt(targetWardrobePrompt)
-        until atempts > maxAtempts or not Script.Alive or (shared.Character:GetAttribute("Hiding") and Script.RootPart.Anchored)
+        until atempts > maxAtempts or not Script.Alive or (shared.Character:GetAttribute("Hiding") and shared.RootPart.Anchored)
 
         if atempts > maxAtempts or not Script.Alive then return false end
         return true
@@ -190,7 +195,7 @@ function Script.Functions.AutoWardrobe(child, index: number | nil) -- child = en
 
         repeat task.wait()
             task.spawn(function() 
-                Script.Functions.Log({
+                shared.Notify:Log({
                     Title = NotifPrefix,
                     Description = "Waiting for Ambush to be close enough...",
     
@@ -204,7 +209,7 @@ function Script.Functions.AutoWardrobe(child, index: number | nil) -- child = en
             local success = hide()
             if success then
                 task.spawn(function() 
-                    Script.Functions.Log({
+                    shared.Notify:Log({
                         Title = NotifPrefix,
                         Description = "Waiting for it to be safe to exit...",
     
@@ -235,7 +240,7 @@ function Script.Functions.AutoWardrobe(child, index: number | nil) -- child = en
 
     table.remove(Script.Temp.AutoWardrobeEntities, entityIndex)
     task.spawn(function() 
-        Script.Functions.Log({
+        shared.Notify:Log({
             Title = NotifPrefix,
             Description = "Finished.",
     

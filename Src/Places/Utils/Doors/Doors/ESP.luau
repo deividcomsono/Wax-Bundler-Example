@@ -5,6 +5,7 @@ local Options = shared.Options
 --// Variables \\--
 local Script = shared.Script
 local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/MS-ESP/refs/heads/main/source.lua"))()
+shared.ESPLibrary = ESPLibrary
 
 type ESP = {
     Color: Color3,
@@ -86,7 +87,7 @@ function Script.Functions.DoorESP(room)
 
     if door then
         local doorNumber = tonumber(room.Name) + 1
-        if isMines then
+        if Script.IsMines then
             doorNumber += 100
         end
 
@@ -287,7 +288,7 @@ function Script.Functions.HidingSpotESP(spot)
     Script.Functions.ESP({
         Type = "HidingSpot",
         Object = spot,
-        Text = if spot:GetAttribute("LoadModule") == "Bed" then "Bed" else HidingPlaceName[floor.Value],
+        Text = if spot:GetAttribute("LoadModule") == "Bed" then "Bed" else Script.HidingPlaceName[Script.Floor.Value],
         Color = Options.HidingSpotEspColor.Value
     })
 end

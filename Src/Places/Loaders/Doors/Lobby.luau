@@ -119,7 +119,7 @@ function Script.Functions.File.LoadPresets()
 
             table.insert(Script.ElevatorPresets, name)
         else
-            Script.Functions.Alert("Failed to load preset: " .. file)
+            shared.Notify:Alert("Failed to load preset: " .. file)
         end
     end
 
@@ -132,11 +132,11 @@ function Script.Functions.LoadPreset(name: string)
 
     local success, ret = pcall(function()
         local data = readfile("mspaint/doors/presets/" .. name .. ".json")
-        return HttpService:JSONDecode(data)
+        return shared.HttpService:JSONDecode(data)
     end)
 
     if not success then
-        Script.Functions.Alert("Failed to load preset: " .. name .. ".json")
+        shared.Notify:Alert("Failed to load preset: " .. name .. ".json")
         return
     end
 
@@ -156,7 +156,7 @@ function Script.Functions.LoadPreset(name: string)
 
     createElevator:FireServer(data)
 
-    Script.Functions.Alert("Loaded elevator preset: " .. name)
+    shared.Notify:Alert("Loaded elevator preset: " .. name)
 end
 
 function Script.Functions.SetupVariables()

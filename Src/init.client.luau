@@ -21,7 +21,8 @@ Services:GetServices({
     "HttpService",
     "RunService",
     "SoundService",
-    "TeleportService"
+    "TeleportService",
+    "TweenService"
 })
 
 --// Utils \\--
@@ -66,6 +67,7 @@ end
 shared.Script = {
     Functions = {}
 }
+shared.Hooks = {}
 
 shared.Script.Functions.EnforceTypes = function(args, template)
     args = if typeof(args) == "table" then args else {}
@@ -99,10 +101,6 @@ shared.ControlModule = require("Utils/Universal/ControlModule")
 shared.RBXGeneral = shared.TextChatService.TextChannels.RBXGeneral
 
 --// Load \\--
-shared.Connect:GiveSignal(workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
-    shared.Camera = workspace.CurrentCamera
-end))
-
 local UICreator = require("Utils/GUI/Creator")
 shared.Window = UICreator:CreateWindow()
 

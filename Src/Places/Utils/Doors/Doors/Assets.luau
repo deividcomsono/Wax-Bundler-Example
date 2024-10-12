@@ -69,10 +69,9 @@ function Script.Functions.ChildCheck(child)
             })
         end
 
-        if child.Name == "Snare" and Toggles.AntiSnare.Value then
-            child:WaitForChild("Hitbox", 5).CanTouch = false
-        elseif child.Name == "GiggleCeiling" and Toggles.AntiGiggle.Value then
-            child:WaitForChild("Hitbox", 5).CanTouch = false
+        if (child.Name == "GiggleCeiling" and Toggles.AntiGiggle.Value) or (child.Name == "Snare" and Toggles.AntiSnare.Value) then
+            local hitbox = child:WaitForChild("Hitbox", 5)
+            if hitbox then hitbox.CanTouch = false end
         elseif (child:GetAttribute("LoadModule") == "DupeRoom" or child:GetAttribute("LoadModule") == "SpaceSideroom") and Toggles.AntiDupe.Value then
             Script.Functions.DisableDupe(child, true, child:GetAttribute("LoadModule") == "SpaceSideroom")
         end
@@ -102,10 +101,16 @@ function Script.Functions.ChildCheck(child)
             end
         end
     elseif child:IsA("BasePart") then
-        if tonumber(child.Name) and child.Name == child.Parent.Name then
-            child.Size *= Vector3.new(1, 100, 1)
-        elseif child.Name == "Egg" and Toggles.AntiGloomEgg.Value then
-            child.CanTouch = false
+        if child.Parent then
+            if tonumber(child.Name) and child.Name == child.Parent.Name then
+                child.Size *= Vector3.new(1, 100, 1)
+            elseif child.Name == "Egg" and Toggles.AntiGloomEgg.Value then
+                child.CanTouch = false
+            end
+        else
+            if child.Name == "Egg" and Toggles.AntiGloomEgg.Value then
+                child.CanTouch = false
+            end
         end
 
         if Toggles.AntiLag.Value then

@@ -31,7 +31,7 @@ function Log(prefix: string, func, ...)
     printer(message)
 
     task.spawn(function()
-        if ExecutorSupport["_SupportsFileSystem"] then
+        if wax.shared.ExecutorSupport["_SupportsFileSystem"] then
             if not Logs.FileName then 
                 Logs.FileName = GenerateLogFileName() 
             end

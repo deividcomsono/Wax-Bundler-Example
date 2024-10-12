@@ -284,7 +284,7 @@ function Script.Functions.Minecart.Teleport(roomNum: number)
                 progressPart.Name = "_internal_mspaint_minecart_teleport"
                 progressPart.Transparency = 1
             end
-            Script.Functions.Alert({
+            shared.Notify:Alert({
                 Title = "Minecart Teleport",
                 Description = "Minecart teleport is ready! Waiting for the minecart...",
 
