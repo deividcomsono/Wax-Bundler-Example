@@ -51,7 +51,7 @@ if not wax.shared.GotPlace then
     if MappingID then
         local Folder = MappingID["Folder"]
         local Name = MappingID["Name"] or Folder
-        local Exclusion = MappingID["Exclusions"][game.PlaceId]
+        local Exclusion = (MappingID["Exclusions"] or {})[game.PlaceId]
     
         shared.ScriptName = Name
         shared.ScriptLoader = Folder .. "/" .. MappingID["Main"]
@@ -99,7 +99,10 @@ shared.PlayerScripts = shared.LocalPlayer.PlayerScripts
 shared.Fly = require("Utils/Universal/Fly")
 shared.ControlModule = require("Utils/Universal/ControlModule")
 
-shared.RBXGeneral = shared.TextChatService.TextChannels.RBXGeneral
+local TextChannels = shared.TextChatService:FindFirstChild("TextChannels")
+if TextChannels and TextChannels:FindFirstChild("RBXGeneral") then
+    shared.RBXGeneral = TextChannels.RBXGeneral
+end
 
 --// Load \\--
 local UICreator = require("Utils/GUI/Creator")
