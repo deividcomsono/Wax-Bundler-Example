@@ -75,6 +75,8 @@ Script._mspaint_custom_captions = Instance.new("ScreenGui") do
     end
 end
 
+shared.Load("Utils", "ConnectionsFuncs")
+
 --// Tabs \\--
 Script.Tabs = {
     Main = shared.Window:AddTab("Main"),
@@ -85,8 +87,12 @@ shared.Load("Tabs", "Main")
 --// Metamethod hooks \\--
 
 --// Connections \\--
+shared.Connect:GiveSignal(shared.LocalPlayer.CharacterAdded:Connect(function(newCharacter)
+    task.delay(1, Script.Functions.SetupCharacterConnection, newCharacter)
+end))
 
 --// Load \\--
+task.spawn(Script.Functions.SetupCharacterConnection, shared.Character)
 
 --// Unload \\--
 shared.Library:OnUnload(function()

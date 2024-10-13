@@ -100,7 +100,11 @@ Toggles.Noclip:OnChanged(function(value)
 
     for _, part in pairs(shared.Character:GetDescendants()) do
         if not part:IsA("BasePart") then continue end
-        part.CanCollide = value
+        part.CanCollide = not value
+
+        shared.Connect:GiveSignal(part:GetPropertyChangedSignal("CanCollide"):Connect(function()
+            part.CanCollide = not Toggles.Noclip.Value
+        end))
     end
 end)
 

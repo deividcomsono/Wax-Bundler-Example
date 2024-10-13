@@ -1,9 +1,10 @@
 return function(scriptType: "Utils" | "Tabs", name: string)
-    local scriptPath = script.Parent.Parent.Places[scriptType]
+    local scriptPath = script.Parent.Parent.Places[scriptType][shared.Mapping["Folder"]]
 
     if shared.ScriptExclusionExists then
-        return require(scriptPath[shared.Mapping["Folder"]][shared.Mapping["Main"]][name])
+        local ExclusionPath = shared.ScriptExclusion or shared.Mapping["Exclusion"]
+        return require(scriptPath[ExclusionPath][name])
     end
     
-    require(scriptPath[shared.Mapping["Main"]][name])
+    require(scriptPath[name])
 end
