@@ -58,6 +58,7 @@ if not wax.shared.GotPlace then
         shared.ScriptLoader = Folder .. "/" .. MappingID["Main"]
 
         shared.Mapping = MappingID
+        shared.ScriptFolder = Folder
         shared.ScriptExclusion = Exclusion
     
         if Exclusion then
