@@ -38,16 +38,6 @@ if not wax.shared.FileHelper then
     wax.shared.FileHelper = require("Utils/FileHelper")
 end
 
---// Luau is so amazing \\--
-function GetDictLength(T)
-    local count = 0
-    for _ in pairs(T) do 
-        count += 1
-    end
-
-    return count
-end
-
 --// mspaint Loader \\--
 if not wax.shared.GotPlace then
     wax.shared.GotPlace = true
@@ -67,7 +57,7 @@ if not wax.shared.GotPlace then
         shared.Mapping = MappingID
         shared.ScriptName = Name
         shared.ScriptLoader = Folder .. "/" .. MappingID["Main"]
-        
+
         shared.ScriptExclusion = Exclusion
     
         if Exclusion then
