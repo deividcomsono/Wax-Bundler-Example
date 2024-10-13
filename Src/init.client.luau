@@ -67,9 +67,8 @@ if not wax.shared.GotPlace then
         shared.Mapping = MappingID
         shared.ScriptName = Name
         shared.ScriptLoader = Folder .. "/" .. MappingID["Main"]
-
+        
         shared.ScriptExclusion = Exclusion
-        shared.ScriptExclusionExists = GetDictLength(GameExclusions) > 0
     
         if Exclusion then
             shared.ScriptName = Name .. " (" .. Exclusion .. ")"

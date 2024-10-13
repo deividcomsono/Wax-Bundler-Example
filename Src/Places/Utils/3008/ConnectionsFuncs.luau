@@ -19,7 +19,6 @@ function Script.Functions.SetupCharacterConnection(newCharacter)
             end
         end))
 
-
         shared.Connect:GiveSignal(shared.Humanoid:GetPropertyChangedSignal("JumpPower"):Connect(function()
             if not shared.Humanoid.UseJumpPower then return end
             if shared.Humanoid.JumpPower ~= Options.JumpPower.Value then
