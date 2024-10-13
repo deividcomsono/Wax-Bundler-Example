@@ -89,8 +89,7 @@ function UICreator:CreateSettingsTab()
 
     SaveManager:IgnoreThemeSettings()
 
-    local saveFolder = if shared.ScriptExclusionExists then ("mspaint/" .. string.lower(shared.ScriptLoader)) else ("mspaint/" .. string.lower(shared.ScriptName))
-    SaveManager:SetFolder(saveFolder)
+    SaveManager:SetFolder("mspaint/" .. string.lower(shared.ScriptLoader))
 
     SaveManager:BuildConfigSection(SettingsTab)
     ThemeManager:ApplyToTab(SettingsTab)
