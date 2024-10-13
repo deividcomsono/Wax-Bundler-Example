@@ -1,10 +1,9 @@
 return function(scriptType: "Utils" | "Tabs", name: string)
-    local splitPath = string.split(shared.ScriptLoader, "/")
     local scriptPath = script.Parent.Parent.Places[scriptType]
 
-    for _, path in pairs(splitPath) do
-        scriptPath = scriptPath[path]
+    if shared.ScriptExclusionExists then
+        return require(scriptPath[shared.Mapping["Folder"]][shared.Mapping["Main"]][name])
     end
     
-    require(scriptPath[name])
+    require(scriptPath[shared.Mapping["Main"]][name])
 end

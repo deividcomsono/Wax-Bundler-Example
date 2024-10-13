@@ -38,6 +38,16 @@ if not wax.shared.FileHelper then
     wax.shared.FileHelper = require("Utils/FileHelper")
 end
 
+--// Luau is so amazing \\--
+function GetDictLength(T)
+    local count = 0
+    for _ in pairs(T) do 
+        count += 1
+    end
+
+    return count
+end
+
 --// mspaint Loader \\--
 if not wax.shared.GotPlace then
     wax.shared.GotPlace = true
@@ -51,10 +61,15 @@ if not wax.shared.GotPlace then
     if MappingID then
         local Folder = MappingID["Folder"]
         local Name = MappingID["Name"] or Folder
-        local Exclusion = (MappingID["Exclusions"] or {})[game.PlaceId]
-    
+        local GameExclusions = MappingID["Exclusions"] or {}
+        local Exclusion = GameExclusions[game.PlaceId]
+        
+        shared.Mapping = MappingID
         shared.ScriptName = Name
         shared.ScriptLoader = Folder .. "/" .. MappingID["Main"]
+
+        shared.ScriptExclusion = Exclusion
+        shared.ScriptExclusionExists = GetDictLength(GameExclusions) > 0
     
         if Exclusion then
             shared.ScriptName = Name .. " (" .. Exclusion .. ")"
