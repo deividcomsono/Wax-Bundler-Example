@@ -81,6 +81,12 @@ Toggles.SpeedHack:OnChanged(function(value)
     shared.Humanoid.WalkSpeed = if value then Options.WalkSpeed.Value else Script.LastSpeed
 end)
 
+Options.WalkSpeed:OnChanged(function(value)
+    if not (shared.Humanoid and Toggles.SpeedHack.Value) then return end
+
+    shared.Humanoid.WalkSpeed = value
+end)
+
 Toggles.JumpPowerHack:OnChanged(function(value)
     if not shared.Humanoid then return end
 
@@ -92,6 +98,16 @@ Toggles.JumpPowerHack:OnChanged(function(value)
         shared.Humanoid.JumpPower = if value then Options.JumpPower.Value else Script.LastJumpPower
     else
         shared.Humanoid.JumpHeight = if value then Options.JumpPower.Value else Script.LastJumpPower
+    end
+end)
+
+Options.JumpPower:OnChanged(function(value)
+    if not (shared.Humanoid and Toggles.JumpPowerHack.Value) then return end
+
+    if shared.Humanoid.UseJumpPower then
+        shared.Humanoid.JumpPower = value
+    else
+        shared.Humanoid.JumpHeight = value
     end
 end)
 
