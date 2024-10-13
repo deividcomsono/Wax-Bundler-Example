@@ -1,5 +1,3 @@
-print("3008 mspaint invoked")
-
 --// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
