@@ -3,111 +3,52 @@ local Toggles = shared.Toggles
 local Options = shared.Options
 
 --// Variables \\--
-shared.Character = shared.LocalPlayer.Character or shared.LocalPlayer.CharacterAdded:Wait()
-
---// Linoria Elements \\--
-local Tabs = {
-    Main = shared.Window:AddTab("Main")
+local Script = shared.Script
+Script.FeatureConnections = {
+    Character = {},
+    Humanoid = {},
+    Player = {},
+    RootPart = {},
+}
+Script.ESPTable = {
+    Player = {},
+    None = {}
 }
 
-local PlayerGroupBox = Tabs.Main:AddLeftGroupbox("Player") do
-    PlayerGroupBox:AddToggle("SpeedHack", {
-        Text = "Speed Hack",
-        Default = false
-    })
+shared.Character = shared.LocalPlayer.Character or shared.LocalPlayer.CharacterAdded:Wait()
 
-    PlayerGroupBox:AddSlider("WalkSpeed", {
-        Text = "Walk Speed",
-        Default = 16,
-        Min = 0,
-        Max = 100,
-        Rounding = 0,
-        Compact = true
-    })
+--// Functions \\--
+shared.Load("Utils", "ESP")
 
-    PlayerGroupBox:AddToggle("JumpPowerHack", {
-        Text = "Jump Power Hack",
-        Default = false
-    })
+shared.Load("Utils", "ConnectionsFuncs")
 
-    PlayerGroupBox:AddSlider("JumpPower", {
-        Text = "Jump Power",
-        Default = 50,
-        Min = 0,
-        Max = 200,
-        Rounding = 0,
-        Compact = true
-    })
+--// Tabs \\--
+Script.Tabs = {
+    Main = shared.Window:AddTab("Main"),
+    Visuals = shared.Window:AddTab("Visuals")
+}
 
-    PlayerGroupBox:AddDivider()
-
-    PlayerGroupBox:AddToggle("Noclip", {
-        Text = "Noclip",
-        Default = false
-    }):AddKeyPicker("NoclipKey", {
-        Mode = "Toggle",
-        Default = "N",
-        Text = "Noclip",
-        SyncToggleState = true
-    })
-
-    PlayerGroupBox:AddToggle("Fly", {
-        Text = "Fly",
-        Default = false
-    }):AddKeyPicker("FlyKey", {
-        Mode = "Toggle",
-        Default = "F",
-        Text = "Fly",
-        SyncToggleState = true
-    })
-    
-    PlayerGroupBox:AddSlider("FlySpeed", {
-        Text = "Fly Speed",
-        Default = 15,
-        Min = 10,
-        Max = 22,
-        Rounding = 1,
-        Compact = true
-    })
-end
+shared.Load("Tabs", "Main")
+shared.Load("Tabs", "Visuals")
 
 --// Code \\--
-function shared.Functions.SetupCharacterConnection(newCharacter)
-    shared.Character = newCharacter
-    shared.Humanoid = shared.Character:FindFirstChildWhichIsA("Humanoid")
-    shared.RootPart = shared.Character:FindFirstChild("HumanoidRootPart") or shared.Character.PrimaryPart
+
+--// Players Connection \\--
+for _, player in pairs(shared.Players:GetPlayers()) do
+    if player == shared.LocalPlayer then continue end
+    Script.Functions.SetupOtherPlayerConnection(player)
 end
+shared.Connect:GiveSignal(shared.Players.PlayerAdded:Connect(Script.Functions.SetupOtherPlayerConnection))
 
---// OnChanged \\--
-Toggles.Noclip:OnChanged(function(value)
-    if not shared.Character then return end
-
-    for _, part in pairs(shared.Character:GetDescendants()) do
-        if not part:IsA("BasePart") then continue end
-        part.CanCollide = value
-    end
-end)
-
-Toggles.Fly:OnChanged(function(value)
-    if not shared.Fly.FlyBody then shared.Fly:Setup() end
-
-    shared.Fly:Set(value)
-end)
-Options.FlySpeed:OnChanged(function(value)
-    shared.Fly:SetSpeed(value)
-end)
-
-
---// Load \\--
-task.spawn(shared.Functions.SetupCharacterConnection, shared.Character)
+--// Local Player Connection \\--
 shared.Connect:GiveSignal(shared.LocalPlayer.CharacterAdded:Connect(function(newCharacter)
-    task.delay(1, shared.Functions.SetupCharacterConnection, newCharacter)
+    task.delay(1, Script.Functions.SetupCharacterConnection, newCharacter)
 end))
 
+--// Run Service \\--
 shared.Connect:GiveSignal(shared.RunService.RenderStepped:Connect(function()
     if shared.Character then
         if shared.Humanoid then
-            if Toggles.SpeedHack.Value then shared.Humanoid.WalkSpeed = Options.WalkSpeed.Value end
             if Toggles.JumpPowerHack.Value then shared.Humanoid.JumpPower = Options.JumpPower.Value end
         end
 
@@ -119,5 +60,8 @@ shared.Connect:GiveSignal(shared.RunService.RenderStepped:Connect(function()
         end
     end
 end))
+
+--// Load \\--
+task.spawn(Script.Functions.SetupCharacterConnection, shared.Character)
 
 getgenv().mspaint_loaded = true

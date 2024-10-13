@@ -100,7 +100,7 @@ function UICreator:CreateSettingsTab()
         if not shared.Toggles.ExecuteOnTeleport.Value or getgenv().queued_to_teleport then return end
 
         getgenv().queued_to_teleport = true
-        queue_on_teleport([[ print("yooo GET OUT") ]]) -- TODO: change to loadstring
+        queue_on_teleport([[ loadstring(game:HttpGet("https://github.com/deividcomsono/mspaint-wax/releases/latest/download/Script.luau"))() ]]) -- TODO: change to loadstring
     end))
 
     return SettingsTab

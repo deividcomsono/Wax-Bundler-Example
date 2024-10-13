@@ -18,9 +18,9 @@ function test(name: string, func: () -> (), shouldCallback: boolean)
         success = typeof(func) == "function"
     end
     
-    ExecutorSupportInfo[name] = string.format("%s [%s]%s", (if success then "✅" else "❌"), name, (if errorMessage then (": " .. tostring(errorMessage)) else ""));
-    ExecutorSupport[name] = success;
-    return success;
+    ExecutorSupportInfo[name] = string.format("%s [%s]%s", (if success then "✅" else "❌"), name, (if errorMessage then (": " .. tostring(errorMessage)) else ""))
+    ExecutorSupport[name] = success
+    return success
 end
 
 test("readfile", readfile, false)
@@ -146,7 +146,7 @@ else
     shared.isnetworkowner = isnetworkowner
 end
 
-shared.firetouch = firetouchinterest or firetouchtransmitter;
+shared.firetouch = firetouchinterest or firetouchtransmitter
 
 --// Load \\--
 ExecutorSupport["_ExecutorName"] = executorName

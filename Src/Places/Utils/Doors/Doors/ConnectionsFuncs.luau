@@ -325,19 +325,15 @@ end
 
 function Script.Functions.SetupOtherPlayerConnection(player: Player)
     if player.Character then
-        if Toggles.PlayerESP ~= nil then
-            if Toggles.PlayerESP.Value then
-                Script.Functions.PlayerESP(player)
-            end
+        if Toggles.PlayerESP and Toggles.PlayerESP.Value then
+            Script.Functions.PlayerESP(player.Character)
         end
     end
 
     shared.Connect:GiveSignal(player.CharacterAdded:Connect(function(newCharacter)
         task.delay(0.1, function()
-            if Toggles.PlayerESP ~= nil then
-                if Toggles.PlayerESP.Value then
-                    Script.Functions.PlayerESP(player)
-                end
+            if Toggles.PlayerESP and Toggles.PlayerESP.Value then
+                Script.Functions.PlayerESP(player.Character)
             end
         end)
 

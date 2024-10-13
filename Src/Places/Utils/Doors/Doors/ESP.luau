@@ -60,13 +60,13 @@ function Script.Functions.ESP(args: ESP)
         OutlineTransparency = Options.ESPOutlineTransparency.Value,
 
         Tracer = {
-            Enabled = Toggles.ESPTracer.Value,
+            Enabled = true,
             From = Options.ESPTracerStart.Value,
             Color = ESPManager.Color
         },
         
         Arrow = {
-            Enabled = Toggles.ESPArrow.Value,
+            Enabled = true,
             CenterOffset = Options.ESPArrowCenterOffset.Value,
             Color = ESPManager.Color
         },
@@ -263,22 +263,22 @@ function Script.Functions.ChestESP(chest)
     })
 end
 
-function Script.Functions.PlayerESP(player: Player)
-    if not (player.Character and player.Character.PrimaryPart and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0) then return end
+function Script.Functions.PlayerESP(character: Model)
+    if not (character and character.PrimaryPart and character:FindFirstChild("Humanoid") and character.Humanoid.Health > 0) then return end
 
     local playerEsp = Script.Functions.ESP({
         Type = "Player",
-        Object = player.Character,
-        Text = string.format("%s [%.1f]", player.DisplayName, player.Character.Humanoid.Health),
-        TextParent = player.Character.PrimaryPart,
+        Object = character,
+        Text = string.format("%s [%.1f]", character.Name, character.Humanoid.Health),
+        TextParent = character.PrimaryPart,
         Color = Options.PlayerEspColor.Value
     })
 
-    Script.FeatureConnections.Player[player.Name] = player.Character.Humanoid.HealthChanged:Connect(function(newHealth)
+    Script.FeatureConnections.Player[character.Name] = character.Humanoid.HealthChanged:Connect(function(newHealth)
         if newHealth > 0 then
-            playerEsp.SetText(string.format("%s [%.1f]", player.DisplayName, newHealth))
+            playerEsp.SetText(string.format("%s [%.1f]", character.Name, newHealth))
         else
-            if Script.FeatureConnections.Player[player.Name] then Script.FeatureConnections.Player[player.Name]:Disconnect() end
+            if Script.FeatureConnections.Player[character.Name] then Script.FeatureConnections.Player[character.Name]:Disconnect() end
             playerEsp.Destroy()
         end
     end)

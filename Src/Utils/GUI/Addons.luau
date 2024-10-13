@@ -94,7 +94,7 @@ task.spawn(function()
         end
 
         warn("[mspaint] Element '" .. tostring(Element.Name) .. " (" .. tostring(Element.Type) .. ")' didn't load: Invalid element type.")
-        return;
+        return
     end
     
     local AddonTab, LastGroupbox = nil, "Right"
@@ -153,8 +153,8 @@ task.spawn(function()
 
             if not AddonTab then createAddonTab(true) end
             
-            local AddonGroupbox = if LastGroupbox == "Right" then AddonTab:AddLeftGroupbox(addon.Title) else AddonTab:AddRightGroupbox(addon.Title);
-            LastGroupbox = if LastGroupbox == "Right" then "Left" else "Right";
+            local AddonGroupbox = if LastGroupbox == "Right" then AddonTab:AddLeftGroupbox(addon.Title) else AddonTab:AddRightGroupbox(addon.Title)
+            LastGroupbox = if LastGroupbox == "Right" then "Left" else "Right"
             if typeof(addon.Description) == "string" then
                 AddonGroupbox:AddLabel(addon.Description, true)
             end

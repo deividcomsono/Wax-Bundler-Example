@@ -485,7 +485,7 @@ Script.NextRoom = Script.CurrentRoom + 1
 
 Script.MainUI = shared.PlayerGui:WaitForChild("MainUI")
 Script.MainGame = Script.MainUI:WaitForChild("Initiator"):WaitForChild("Main_Game")
-Script.MainGameSrc = if wax.shared.ExecutorSupport["require"] then require(Script.MainGame) else nil
+Script.MainGameSrc = if wax.shared.ExecutorSupport["require"] then wax.require(Script.MainGame) else nil
 
 --// Other Variables \\--
 Script.SpeedBypassing = false
@@ -493,21 +493,17 @@ Script.LastSpeed = 0
 Script.Bypassed = false
 
 --// Functions \\--
-local function Load(scriptType: "Utils" | "Tabs", name: string)
-    return require(script.Parent.Parent.Parent[scriptType].Doors.Doors[name])
-end
+shared.Load("Utils", "Player")
+shared.Load("Utils", "ESP")
+shared.Load("Utils", "Assets")
+shared.Load("Utils", "Entities")
 
-Load("Utils", "Player")
-Load("Utils", "ESP")
-Load("Utils", "Assets")
-Load("Utils", "Entities")
+shared.Load("Utils", "AutoWardrobe")
+shared.Load("Utils", "BreakerBox")
+shared.Load("Utils", "Padlock")
+shared.Load("Utils", "Minecarts")
 
-Load("Utils", "AutoWardrobe")
-Load("Utils", "BreakerBox")
-Load("Utils", "Padlock")
-Load("Utils", "Minecarts")
-
-Load("Utils", "ConnectionsFuncs")
+shared.Load("Utils", "ConnectionsFuncs")
 
 --// Tabs \\--
 Script.Tabs = {
@@ -517,10 +513,10 @@ Script.Tabs = {
     Floor = shared.Window:AddTab("Floor")
 }
 
-Load("Tabs", "Main")
-Load("Tabs", "Exploits")
-Load("Tabs", "Visuals")
-task.spawn(Load, "Tabs", "Floor")
+shared.Load("Tabs", "Main")
+shared.Load("Tabs", "Exploits")
+shared.Load("Tabs", "Visuals")
+task.spawn(shared.Load, "Tabs", "Floor")
 
 --// Code \\--
 if wax.shared.ExecutorSupport["hookmetamethod"] and wax.shared.ExecutorSupport["getnamecallmethod"] then
@@ -839,10 +835,7 @@ for _, player in pairs(shared.Players:GetPlayers()) do
     if player == shared.LocalPlayer then continue end
     Script.Functions.SetupOtherPlayerConnection(player)
 end
-shared.Connect:GiveSignal(shared.Players.PlayerAdded:Connect(function(player)
-    if player == shared.LocalPlayer then return end
-    Script.Functions.SetupOtherPlayerConnection(player)
-end))
+shared.Connect:GiveSignal(shared.Players.PlayerAdded:Connect(Script.Functions.SetupOtherPlayerConnection))
 
 --// Local Player Connection \\--
 shared.Connect:GiveSignal(shared.LocalPlayer.CharacterAdded:Connect(function(newCharacter)
@@ -896,7 +889,7 @@ shared.Connect:GiveSignal(shared.PlayerGui.ChildAdded:Connect(function(child)
                 Script.MainGame = Script.MainUI:WaitForChild("Initiator"):WaitForChild("Main_Game")
 
                 if Script.MainGame then
-                    if wax.shared.ExecutorSupport["require"] then Script.MainGameSrc = require(Script.MainGame) end
+                    if wax.shared.ExecutorSupport["require"] then Script.MainGameSrc = wax.require(Script.MainGame) end
 
                     if Script.MainGame:WaitForChild("Health", 5) then
                         if Script.IsHotel and Toggles.NoJammin.Value and Script.LiveModifiers:FindFirstChild("Jammin") then

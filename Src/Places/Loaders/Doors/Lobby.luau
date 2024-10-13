@@ -96,7 +96,7 @@ Script.LobbyElevators = workspace:WaitForChild("Lobby"):WaitForChild("LobbyEleva
 --// Functions \\--
 function Script.Functions.SetupVariables()
     if wax.shared.ExecutorSupport["require"] then
-        for achievementName, _ in pairs(require(game:GetService("ReplicatedStorage").Achievements)) do
+        for achievementName, _ in pairs(wax.require(game:GetService("ReplicatedStorage").Achievements)) do
             if table.find(Script.Achievements, achievementName) then continue end
     
             table.insert(Script.Achievements, achievementName)
@@ -143,18 +143,14 @@ function Script.Functions.SetupCharacterConnection(newCharacter)
     shared.RootPart = shared.Character:FindFirstChild("HumanoidRootPart") or shared.Character.PrimaryPart
 end
 
-local function Load(scriptType: "Utils" | "Tabs", name: string)
-    return require(script.Parent.Parent.Parent[scriptType].Doors.Lobby[name])
-end
-
-Load("Utils", "Preset")
+shared.Load("Utils", "Preset")
 
 --// Tabs \\--
 Script.Tabs = {
     Main = shared.Window:AddTab("Main")
 }
 
-Load("Tabs", "Main")
+shared.Load("Tabs", "Main")
 
 --// Code \\--
 task.spawn(Script.Functions.SetupVariables)

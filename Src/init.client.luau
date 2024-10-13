@@ -1,4 +1,4 @@
-if getgenv().mspaint_loading then  print("[mspaint] Loading stopped. (ERROR: Loading)"); return end
+if getgenv().mspaint_loading then print("[mspaint] Loading stopped. (ERROR: Loading)"); return end
 if getgenv().mspaint_loaded then print("[mspaint] Loading stopped. (ERROR: Already loaded)"); return end
 
 getgenv().mspaint_loading = true
@@ -85,6 +85,7 @@ shared.Script.Functions.EnforceTypes = function(args, template)
     return args
 end
 
+shared.Load = require("Utils/Loader")
 shared.Logs = require("Utils/Logs")
 shared.Connect = require("Utils/Connections")
 

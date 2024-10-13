@@ -484,7 +484,7 @@ Toggles.PlayerESP:OnChanged(function(value)
         for _, player in pairs(shared.Players:GetPlayers()) do
             if player == shared.LocalPlayer or not player.Character then continue end
             
-            Script.Functions.PlayerESP(player)
+            Script.Functions.PlayerESP(player.Character)
         end
     else
         for _, connection in pairs(Script.FeatureConnections.Player) do

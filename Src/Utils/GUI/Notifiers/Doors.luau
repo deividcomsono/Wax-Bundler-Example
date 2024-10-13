@@ -1,15 +1,13 @@
 local Doors = {}
 
 --// Player Variables \\--
-local localPlayer = shared.LocalPlayer
-local playerGui = localPlayer.PlayerGui
 local mainUI
 
 --// Functions \\--
 function Doors:Notify(unsafeOptions)
     assert(typeof(unsafeOptions) == "table", "Expected a table as options argument but got " .. typeof(unsafeOptions))
 
-    mainUI = mainUI or playerGui:WaitForChild("MainUI", 2.5)
+    mainUI = mainUI or shared.PlayerGui:WaitForChild("MainUI", 2.5)
     if not mainUI then return end
 
     local options = shared.Script.Functions.EnforceTypes(unsafeOptions, {

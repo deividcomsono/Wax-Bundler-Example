@@ -1,5 +1,6 @@
 local Fly = {
     FlyBody = nil,
+    FlyGyro = nil,
     Enabled = false, 
     Speed = 15
 }
@@ -9,7 +10,12 @@ function Fly:Setup()
     flyBody.Velocity = Vector3.zero
     flyBody.MaxForce = Vector3.one * 9e9
 
+    local flyGyro = Instance.new("BodyGyro")
+    flyGyro.P = 9e4
+    flyGyro.MaxTorque = Vector3.one * 9e9
+
     Fly.FlyBody = flyBody
+    Fly.FlyGyro = flyGyro
 
     shared.Connections["Fly"] = shared.RunService.RenderStepped:Connect(function()
         if not Fly.Enabled or (if shared.Library then shared.Library.Unloaded == true else true) then return end
@@ -22,6 +28,7 @@ function Fly:Setup()
         if shared.UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then velocity -= shared.Camera.CFrame.UpVector end
         
         Fly.FlyBody.Velocity = velocity * Fly.Speed
+        Fly.FlyGyro.CFrame = shared.Camera.CFrame
     end)
 end
 
@@ -30,6 +37,7 @@ function Fly:Stop()
 
     shared.Connect:DisconnectSignal(shared.Connections["Fly"])
     if Fly.FlyBody then Fly.FlyBody:Destroy() end
+    if Fly.FlyGyro then Fly.FlyGyro:Destroy() end
 end
 
 function Fly:Set(value: boolean)
@@ -39,7 +47,8 @@ function Fly:Set(value: boolean)
 
     Fly.Enabled = value
     if shared.Humanoid then shared.Humanoid.PlatformStand = value end
-    Fly.FlyBody.Parent = value and shared.RootPart or nil
+    Fly.FlyBody.Parent = if value then shared.RootPart else nil
+    Fly.FlyGyro.Parent = if value then shared.RootPart else nil
 end
 
 function Fly:Enable() Fly:Set(true) end

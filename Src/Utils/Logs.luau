@@ -22,12 +22,12 @@ function GenerateLogFileName()
         "log_%04d-%02d-%02d_%02d-%02d-%02d.log",
         date.year, date.month, date.day,
         date.hour, date.min, date.sec
-    );
+    )
 end
 
 function Log(prefix: string, func, ...)
     local message = string.format("[%s] ", prefix) .. TableToMessage({ ... })
-    local printer = func or print;
+    local printer = func or print
     printer(message)
 
     task.spawn(function()
@@ -45,7 +45,7 @@ function Logs:Log(...) Log("INFO", print, ...) end
 function Logs:Warn(...) Log("WARN", warn, ...) end
 function Logs:Error(...) Log("ERROR", error, ...) end
 function Logs:Debug(...) 
-    if not Logs.Debug then return end; 
+    if not Logs.Debug then return end
     Log("DEBUG", print, ...) 
 end
 
