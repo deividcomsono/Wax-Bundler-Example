@@ -85,7 +85,6 @@ Options.WalkSpeed:OnChanged(function(value)
     if not shared.Humanoid then return end
 
     if shared.Humanoid.WalkSpeed ~= value then
-        Script.LastSpeed = shared.Humanoid.WalkSpeed
         if Toggles.SpeedHack.Value then shared.Humanoid.WalkSpeed = value end
     end
 end)
@@ -109,12 +108,10 @@ Options.JumpPower:OnChanged(function(value)
 
     if shared.Humanoid.UseJumpPower then
         if shared.Humanoid.JumpPower ~= value then
-            Script.LastJumpPower = shared.Humanoid.JumpPower
             if Toggles.JumpPowerHack.Value then shared.Humanoid.JumpPower = value end
         end
     else
         if shared.Humanoid.JumpHeight ~= value then
-            Script.LastJumpPower = shared.Humanoid.JumpHeight
             if Toggles.JumpPowerHack.Value then shared.Humanoid.JumpHeight = value end
         end
     end
