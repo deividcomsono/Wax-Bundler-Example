@@ -54,10 +54,10 @@ if not wax.shared.GotPlace then
         local GameExclusions = MappingID["Exclusions"] or {}
         local Exclusion = GameExclusions[game.PlaceId]
         
-        shared.Mapping = MappingID
         shared.ScriptName = Name
         shared.ScriptLoader = Folder .. "/" .. MappingID["Main"]
 
+        shared.Mapping = MappingID
         shared.ScriptExclusion = Exclusion
     
         if Exclusion then
