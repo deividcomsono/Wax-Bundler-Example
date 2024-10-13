@@ -96,7 +96,7 @@ function UICreator:CreateSettingsTab()
 
     SaveManager:LoadAutoloadConfig()
 
-    shared.Library:GiveSignal(shared.LocalPlayer.OnTeleport:Connect(function()
+    shared.Connect:GiveSignal(shared.LocalPlayer.OnTeleport:Connect(function()
         if not shared.Toggles.ExecuteOnTeleport.Value or getgenv().queued_to_teleport then return end
 
         getgenv().queued_to_teleport = true

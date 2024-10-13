@@ -3,13 +3,14 @@ if shared.LocalPlayer.PlayerGui:FindFirstChild("LoadingUI") and shared.LocalPlay
     repeat task.wait() until not shared.LocalPlayer.PlayerGui.LoadingUI.Enabled
 end
 
+shared.Character = shared.LocalPlayer.Character or shared.LocalPlayer.CharacterAdded:Wait()
+
 --// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
 --// Variables \\--
 local Script = shared.Script
-
 Script.CurrentBadge = 0
 Script.Achievements = {
     "SurviveWithoutHiding",
@@ -81,98 +82,32 @@ Script.Achievements = {
     "SurviveHide",
     "JoinAgain"
 }
-Script.ElevatorPresetData = {}
-Script.ElevatorPresets = {}
 
-local presetHelper = wax.shared.FileHelper.new("mspaint/doors/presets")
+Script.RemotesFolder = shared.ReplicatedStorage:WaitForChild("RemotesFolder")
+Script.CreateElevator = Script.RemotesFolder:WaitForChild("CreateElevator")
 
-function Script.Functions.File.CreatePreset(name: string, data: table)
-    local presetData = Script.Functions.EnforceTypes(data, {
-        Floor = "Hotel",
-        MaxPlayers = 1,
-        Modifiers = nil,
-        FriendsOnly = true
-    })
+Script.MainUI = shared.PlayerGui:WaitForChild("MainUI")
+Script.LobbyFrame = Script.MainUI:WaitForChild("LobbyFrame")
+Script.AchievementsFrame = Script.LobbyFrame:WaitForChild("Achievements")
+Script.CreateElevatorFrame = Script.LobbyFrame:WaitForChild("CreateElevator")
 
-    presetHelper.CreateFile(name .. ".json", shared.HttpService:JSONEncode(presetData))
-end
+Script.LobbyElevators = workspace:WaitForChild("Lobby"):WaitForChild("LobbyElevators")
 
-function Script.Functions.File.LoadPresets()
-    table.clear(Script.ElevatorPresets)
-    table.clear(Script.ElevatorPresetData)
-
-    for _, file in pairs(listfiles("mspaint/doors/presets")) do
-        local success, ret = pcall(function()
-            local data = readfile(file)
-            return HttpService:JSONDecode(data)
-        end)
-
-        if success then
-            local name = Script.Functions.File.GetFileNameFromPath(file)
-
-            Script.ElevatorPresetData[name] = Script.Functions.EnforceTypes(ret, {
-                Floor = "Hotel",
-                MaxPlayers = 1,
-                Modifiers = nil,
-                FriendsOnly = true
-            })
-
-            table.insert(Script.ElevatorPresets, name)
-        else
-            shared.Notify:Alert("Failed to load preset: " .. file)
-        end
-    end
-
-    Options.Elevator_PresetList:SetValues(Script.ElevatorPresets)
-    Options.Elevator_PresetList:SetValue(nil)
-end
-
-function Script.Functions.LoadPreset(name: string)
-    Script.Functions.File.BuildPresetStructure()
-
-    local success, ret = pcall(function()
-        local data = readfile("mspaint/doors/presets/" .. name .. ".json")
-        return shared.HttpService:JSONDecode(data)
-    end)
-
-    if not success then
-        shared.Notify:Alert("Failed to load preset: " .. name .. ".json")
-        return
-    end
-
-    local presetData = Script.Functions.EnforceTypes(ret, {
-        Floor = "Hotel",
-        MaxPlayers = 1,
-        Modifiers = nil,
-        FriendsOnly = true
-    })
-
-    local data = {
-        ["FriendsOnly"] = presetData.FriendsOnly,
-        ["Destination"] = presetData.Floor,
-        ["Mods"] = presetData.Modifiers or {},
-        ["MaxPlayers"] = tostring(presetData.MaxPlayers)
-    }
-
-    createElevator:FireServer(data)
-
-    shared.Notify:Alert("Loaded elevator preset: " .. name)
-end
-
+--// Functions \\--
 function Script.Functions.SetupVariables()
-    if shared.ExecutorSupport["require"] then
+    if wax.shared.ExecutorSupport["require"] then
         for achievementName, _ in pairs(require(game:GetService("ReplicatedStorage").Achievements)) do
             if table.find(Script.Achievements, achievementName) then continue end
     
             table.insert(Script.Achievements, achievementName)
         end
     else
-        local badgeList = achievementsFrame:WaitForChild("List", math.huge)
+        local badgeList = Script.AchievementsFrame:WaitForChild("List", math.huge)
 
         if badgeList then
             repeat task.wait(.5) until #badgeList:GetChildren() ~= 0
             
-            shared.Library:GiveSignal(badgeList.ChildAdded:Connect(function(badge)
+            shared.Connect:GiveSignal(badgeList.ChildAdded:Connect(function(badge)
                 if not badge:IsA("ImageButton") then return end
                 if table.find(Script.Achievements, badge.Name) then return end
                 table.insert(Script.Achievements, badge.Name)
@@ -188,19 +123,46 @@ function Script.Functions.SetupVariables()
     end
 end
 
-shared.Character = shared.LocalPlayer.Character or shared.LocalPlayer.CharacterAdded:Wait()
+function Script.Functions.LoopAchievements()
+    task.spawn(function()
+        while Toggles.LoopAchievements.Value and not shared.Library.Unloaded do
+            if Script.CurrentBadge >= #Script.Achievements then Script.CurrentBadge = 0 end
+            Script.CurrentBadge += 1
 
---// Code \\--
+            local random = Script.Achievements[Script.CurrentBadge]
+            Script.RemotesFolder.FlexAchievement:FireServer(random)
+
+            task.wait(Options.LoopAchievementsSpeed.Value)
+        end
+    end)
+end
+
 function Script.Functions.SetupCharacterConnection(newCharacter)
     shared.Character = newCharacter
     shared.Humanoid = shared.Character:FindFirstChildWhichIsA("Humanoid")
     shared.RootPart = shared.Character:FindFirstChild("HumanoidRootPart") or shared.Character.PrimaryPart
 end
 
+local function Load(scriptType: "Utils" | "Tabs", name: string)
+    return require(script.Parent.Parent.Parent[scriptType].Doors.Lobby[name])
+end
+
+Load("Utils", "Preset")
+
+--// Tabs \\--
+Script.Tabs = {
+    Main = shared.Window:AddTab("Main")
+}
+
+Load("Tabs", "Main")
+
+--// Code \\--
+task.spawn(Script.Functions.SetupVariables)
+task.spawn(Script.Functions.LoadPresets)
+
 task.spawn(Script.Functions.SetupCharacterConnection, shared.Character)
-shared.Library:GiveSignal(shared.LocalPlayer.CharacterAdded:Connect(function(newCharacter)
+shared.Connect:GiveSignal(shared.LocalPlayer.CharacterAdded:Connect(function(newCharacter)
     task.delay(1, Script.Functions.SetupCharacterConnection, newCharacter)
 end))
-
 
 getgenv().mspaint_loaded = true

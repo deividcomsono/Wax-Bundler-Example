@@ -36,12 +36,19 @@ function FileHelper.new(basepath: string)
     end
 
     self.GetFiles = function()
-        local files = {}
-        for _, file in pairs(listfiles(self.BasePath)) do
-            table.insert(files, file)
-        end
+        return listfiles(self.BasePath)
+    end
 
-        return files
+    self.ReadFile = function(name: string)
+        return readfile(self.BasePath .. "/" .. name)
+    end
+
+    self.IsFile = function(name: string)
+        return isfile(self.BasePath .. "/" .. name)
+    end
+
+    self.DeleteFile = function(name: string)
+        delfile(self.BasePath .. "/" .. name)
     end
 
     self.GetFilesClean = function()
@@ -54,6 +61,10 @@ function FileHelper.new(basepath: string)
         end
 
         return files
+    end
+
+    self.GetFileNameFromPath = function(path: string, extention: string | nil)
+        return FileHelper.GetFileNameFromPath(path, extention)
     end
 
     return self
