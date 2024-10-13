@@ -485,7 +485,7 @@ Script.NextRoom = Script.CurrentRoom + 1
 
 Script.MainUI = shared.PlayerGui:WaitForChild("MainUI")
 Script.MainGame = Script.MainUI:WaitForChild("Initiator"):WaitForChild("Main_Game")
-Script.MainGameSrc = if wax.shared.ExecutorSupport["require"] then require(Script.MainGame) else nil
+Script.MainGameSrc = if wax.shared.ExecutorSupport["require"] then wax.require(Script.MainGame) else nil
 
 --// Other Variables \\--
 Script.SpeedBypassing = false
@@ -896,7 +896,7 @@ shared.Connect:GiveSignal(shared.PlayerGui.ChildAdded:Connect(function(child)
                 Script.MainGame = Script.MainUI:WaitForChild("Initiator"):WaitForChild("Main_Game")
 
                 if Script.MainGame then
-                    if wax.shared.ExecutorSupport["require"] then Script.MainGameSrc = require(Script.MainGame) end
+                    if wax.shared.ExecutorSupport["require"] then Script.MainGameSrc = wax.require(Script.MainGame) end
 
                     if Script.MainGame:WaitForChild("Health", 5) then
                         if Script.IsHotel and Toggles.NoJammin.Value and Script.LiveModifiers:FindFirstChild("Jammin") then
