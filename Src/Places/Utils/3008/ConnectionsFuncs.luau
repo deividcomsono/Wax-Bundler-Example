@@ -13,6 +13,8 @@ function Script.Functions.SetupCharacterConnection(newCharacter)
     Script.System = shared.Character:WaitForChild("System")
     Script.Event = Script.System:WaitForChild("Event")
 
+    Script.Functions.SetupCharacterDeathConnection(newCharacter)
+
     if shared.Humanoid then
         Script.LastSpeed = shared.Humanoid.WalkSpeed
 
@@ -64,4 +66,12 @@ function Script.Functions.SetupCharacterConnection(newCharacter)
     end
 
     shared.RootPart = shared.Character:WaitForChild("HumanoidRootPart")
+end
+
+function Script.Functions.SetupCharacterDeathConnection(newCharacter)
+    shared.Connect:GiveSignal(newCharacter:WaitForChild("Humanoid").Died:Connect(function()
+        if Toggles.AutoRespawn.Value then
+            Script.Functions.Respawn()
+        end
+    end))
 end

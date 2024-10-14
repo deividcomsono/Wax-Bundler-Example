@@ -84,7 +84,10 @@ local PlayerGroupBox = Tabs.Main:AddLeftGroupbox("Player") do
 end
 
 local AutomationGroupBox = Tabs.Main:AddRightGroupbox("Automation") do
-    --AutomationGroupBox:AddToggle("")
+    AutomationGroupBox:AddToggle("AutoRespawn", {
+        Text = "Auto Respawn",
+        Default = false
+    })
 end
 
 --// Player \\--

@@ -82,6 +82,17 @@ Script._mspaint_custom_captions = Instance.new("ScreenGui") do
     end
 end
 
+function Script.Functions.Respawn()
+    shared.Character:BreakJoints()
+
+    repeat task.wait(0.1) until Script.DeathScreen.BG.Visible
+    
+    Script.Event:FireServer("Respawn")
+
+    Script.DeathScreen.DeathSound:Stop()
+    Script.DeathScreen.DeathMusic:Stop()
+end
+
 shared.Load("Utils", "ConnectionsFuncs")
 
 --// Tabs \\--
