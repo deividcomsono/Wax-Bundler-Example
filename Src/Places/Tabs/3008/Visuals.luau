@@ -94,27 +94,32 @@ Toggles.NoFog:OnChanged(function(value)
     end
 end)
 
-Toggles.PersonalWatch:OnChanged(function(Value)
-    if not wax.shared.ExecutorSupport["require"] then return end
-
-	while Toggles.PersonalWatch.Value and task.wait() do
-		Script.Calendar["Gamepass_Clock"].Text = require(shared.ReplicatedStorage.Modules.Date).GetTimeInClockFormat(Script.TimeLeft.Value)
-        
-        if Script.TimeLeft.Value == 5 then
-            Script.Calendar["Gamepass_Clock"].Countdown.Playing = true
+Toggles.PersonalWatch:OnChanged(function(value)
+    if wax.shared.ExecutorSupport["require"] then
+        if value then
+            Script.Calendar["Gamepass_Clock"].Visible = true
+            while Toggles.PersonalWatch.Value and task.wait() do
+                Script.Calendar["Gamepass_Clock"].Text = require(shared.ReplicatedStorage.Modules.Date).GetTimeInClockFormat(Script.TimeLeft.Value)
+                
+                if Script.TimeLeft.Value == 5 then
+                    Script.Calendar["Gamepass_Clock"].Countdown.Playing = true
+                end
+            end
+        else
+            Script.Calendar["Gamepass_Clock"].Visible = Script.GamePassClockVisible
         end
-	end
+    end
 end)
 
-Toggles.DeathWaypoint:OnChanged(function(Value)
-    if not wax.shared.ExecutorSupport["require"] then return end
-
-	require(Script.WaypointsMenu).create_death = Value
-	require(Script.WaypointsMenu).death_waypoint = Value
+Toggles.DeathWaypoint:OnChanged(function(value)
+    if wax.shared.ExecutorSupport["require"] then
+        require(Script.WaypointsMenu).create_death = value
+        require(Script.WaypointsMenu).death_waypoint = value
+    end
 end)
 
-Options.MaxWaypoints:OnChanged(function(Value)
-    if not wax.shared.ExecutorSupport["require"] then return end
-
-	require(Script.WaypointsMenu).waypoint_limit = Value
+Options.MaxWaypoints:OnChanged(function(value)
+    if wax.shared.ExecutorSupport["require"] then
+        require(Script.WaypointsMenu).waypoint_limit = value
+    end
 end)

@@ -44,6 +44,8 @@ Script.Client = Script.Source:WaitForChild("client")
 Script.ToolSystem = Script.Client:WaitForChild("ToolSystem")
 Script.WaypointsMenu = Script.Client:WaitForChild("GUI"):WaitForChild("GuiMenus"):WaitForChild("Extras"):WaitForChild("WaypointsMenu")
 
+Script.GamePassClockVisible = Script.Calendar:WaitForChild("Gamepass_Clock").Visible
+
 --// Functions \\--
 Script._mspaint_custom_captions = Instance.new("ScreenGui") do
     local Frame = Instance.new("Frame", Script._mspaint_custom_captions)
