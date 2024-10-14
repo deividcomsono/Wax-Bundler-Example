@@ -20,9 +20,6 @@ Script.Physical = workspace:WaitForChild("GameObjects"):WaitForChild("Physical")
 Script.Map = Script.Physical:WaitForChild("Map")
 Script.Employees = Script.Physical:WaitForChild("Employees")
 
-Script.DeathScreen = shared.PlayerGui:WaitForChild("DeathScreen")
-Script.Settings = shared.PlayerGui:WaitForChild("PlayerInfo"):WaitForChild("Settings")
-
 --// Player Variables \\--
 shared.Character = shared.LocalPlayer.Character or shared.LocalPlayer.CharacterAdded:Wait()
 shared.Humanoid = nil
@@ -30,6 +27,12 @@ shared.Humanoid = nil
 Script.System = shared.Character:WaitForChild("System")
 Script.Event = Script.System:WaitForChild("Event")
 Script.Action = Script.System:WaitForChild("Action")
+
+Script.DeathScreen = shared.PlayerGui:WaitForChild("DeathScreen")
+Script.Settings = shared.PlayerGui:WaitForChild("PlayerInfo"):WaitForChild("Settings")
+Script.PlayerStats = shared.PlayerGui:WaitForChild("MainGui"):WaitForChild("PlayerStats")
+
+Script.ToolSystem = shared.PlayerScripts:WaitForChild("source"):WaitForChild("client"):WaitForChild("ToolSystem")
 
 --// Functions \\--
 Script._mspaint_custom_captions = Instance.new("ScreenGui") do
@@ -177,6 +180,52 @@ if wax.shared.ExecutorSupport["hookfunction"] and wax.shared.ExecutorSupport["ge
     end))
 end
 
+if wax.shared.ExecutorSupport["hookmetamethod"] and wax.shared.ExecutorSupport["getnamecallmethod"] then
+    if wax.shared.ExecutorSupport["require"] then
+        Script.ToolGStep = wax.require(Script.ToolSystem).GlobalRenderStep
+    end
+
+    shared.Hooks.mtHook = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+        local method = getnamecallmethod()
+        local args = {...}
+
+        if Toggles.InfiniteInventory.Value and wax.shared.ExecutorSupport["require"] then
+            if method == "InvokeServer" and self.Name == "Action" and args[1] == "Store" and args[3] ~= "_internal_origin_mspaint" then
+                require(Script.ToolSystem).GlobalRenderStep = function() end
+                local parentedTools = {}
+                
+                for _, tool in pairs(shared.LocalPlayer.Backpack:GetChildren()) do
+                    table.insert(parentedTools, tool)
+                
+                    shared.Humanoid:EquipTool(tool)
+                    tool.Parent = workspace
+                end
+
+                task.wait()
+                local modelName = args[2].Model.Name
+
+                Script.Action:InvokeServer("Store", args[2], "_internal_origin_mspaint")
+                
+                local newTool = shared.LocalPlayer.Backpack:WaitForChild(modelName)
+
+                shared.Humanoid:EquipTool(newTool)
+
+                for _, tool in pairs(parentedTools)  do
+                    tool.Parent = shared.Character
+                    shared.Humanoid:EquipTool(tool)
+                end
+                
+                shared.Humanoid:UnequipTools()
+
+                require(Script.ToolSystem).GlobalRenderStep = Script.ToolGStep
+                return
+            end
+        end
+        
+        return shared.Hooks.mtHook(self, ...)
+    end))
+end
+
 --// Connections \\--
 shared.Connect:GiveSignal(shared.LocalPlayer.CharacterAdded:Connect(function(newCharacter)
     task.delay(1, Script.Functions.SetupCharacterConnection, newCharacter)
@@ -187,6 +236,7 @@ shared.Connect:GiveSignal(shared.Camera.ChildAdded:Connect(Script.Functions.Came
 --// Load \\--
 task.spawn(Script.Functions.SetupCharacterConnection, shared.Character)
 task.spawn(Script.Functions.SetupLightingConnection)
+task.spawn(Script.Functions.SetupExploitInfModulesConnection)
 
 for _, child in pairs(shared.Camera:GetChildren()) do
     Script.Functions.CameraChildAdded(child)
@@ -196,6 +246,10 @@ end
 shared.Library:OnUnload(function()
     if wax.shared.ExecutorSupport["hookfunction"] and wax.shared.ExecutorSupport["getcallingscript"] then
         hookfunction(TweenInfo.new, shared.Hooks.instantInteract)
+    end
+
+    if wax.shared.ExecutorSupport["hookmetamethod"] and wax.shared.ExecutorSupport["getnamecallmethod"] then
+        hookmetamethod(game, "__namecall", shared.Hooks.mtHook)
     end
 end)
 

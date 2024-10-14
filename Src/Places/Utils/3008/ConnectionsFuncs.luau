@@ -100,7 +100,7 @@ function Script.Functions.SetupLightingConnection()
     end))
 
     shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("ColorShift_Bottom"):Connect(function()
-        if shared.Lighting.ColorShift_Bottom ~= Script.CurrentColorShift_Bottom and shared.Light.ColorShift_Bottom ~= Color3.new(1, 1, 1) then
+        if shared.Lighting.ColorShift_Bottom ~= Script.CurrentColorShift_Bottom and shared.Lighting.ColorShift_Bottom ~= Color3.new(1, 1, 1) then
             Script.CurrentColorShift_Bottom = shared.Lighting.ColorShift_Bottom
         end
 
@@ -110,7 +110,7 @@ function Script.Functions.SetupLightingConnection()
     end))
 
     shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("ColorShift_Top"):Connect(function()
-        if shared.Lighting.ColorShift_Top ~= Script.CurrentColorShift_Top and shared.Light.ColorShift_Top ~= Color3.new(1, 1, 1) then
+        if shared.Lighting.ColorShift_Top ~= Script.CurrentColorShift_Top and shared.Lighting.ColorShift_Top ~= Color3.new(1, 1, 1) then
             Script.CurrentColorShift_Top = shared.Lighting.ColorShift_Top
         end
 
@@ -144,4 +144,26 @@ function Script.Functions.SetupLightingConnection()
             shared.Lighting["FoggyDay_Atmosphere"].Density = 0
         end
     end
+end
+
+function Script.Functions.SetupExploitInfModulesConnection()
+    shared.Connect:GiveSignal(Script.PlayerStats:WaitForChild("Energy").Value:GetPropertyChangedSignal("Text"):Connect(function()
+        if Toggles.InfiniteEnergy.Value then
+            Script.Event:FireServer("DecreaseStat", {
+                Stats = {
+                    Energy = -100
+                }
+            })
+        end
+    end))
+
+    shared.Connect:GiveSignal(Script.PlayerStats:WaitForChild("Hunger").Value:GetPropertyChangedSignal("Text"):Connect(function()
+        if Toggles.InfiniteHunger.Value then
+            Script.Event:FireServer("DecreaseStat", {
+                Stats = {
+                    Hunger = -100
+                }
+            })
+        end
+    end))
 end
