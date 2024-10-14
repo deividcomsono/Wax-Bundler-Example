@@ -94,6 +94,31 @@ local ESPTabBox = Tabs.Visuals:AddLeftTabbox() do
     end
 end
 
+local AmbientGroupBox = Tabs.Visuals:AddLeftGroupbox("Ambient") do
+    AmbientGroupBox:AddSlider("Brightness", {
+        Text = "Brightness",
+        Default = 0,
+        Min = 0,
+        Max = 3,
+        Rounding = 1,
+    })
+
+    AmbientGroupBox:AddToggle("Fullbright", {
+        Text = "Fullbright",
+        Default = false,
+    })
+
+    AmbientGroupBox:AddToggle("NoFog", {
+        Text = "No Fog",
+        Default = false,
+    })
+
+    AmbientGroupBox:AddToggle("AntiLag", {
+        Text = "Anti-Lag",
+        Default = false,
+    })
+end
+
 --// ESP \\--
 Toggles.PlayerESP:OnChanged(function(value)
     if value then
@@ -175,4 +200,71 @@ Options.ESPArrowCenterOffset:OnChanged(function(value)
             esp.Update({ Arrow = { CenterOffset = value } })
         end
     end
+end)
+
+--// Ambient \\--
+Options.Brightness:OnChanged(function(value)
+    shared.Lighting.Brightness = value
+end)
+
+Toggles.Fullbright:OnChanged(function(value)
+    shared.Lighting.GlobalShadows = value
+end)
+
+Toggles.NoFog:OnChanged(function(value)
+    if not shared.Lighting:GetAttribute("FogStart") then shared.Lighting:SetAttribute("FogStart", shared.Lighting.FogStart) end
+    if not shared.Lighting:GetAttribute("FogEnd") then shared.Lighting:SetAttribute("FogEnd", shared.Lighting.FogEnd) end
+
+    shared.Lighting.FogStart = value and 0 or shared.Lighting:GetAttribute("FogStart")
+    shared.Lighting.FogEnd = value and math.huge or shared.Lighting:GetAttribute("FogEnd")
+
+    local fog = shared.Lighting:FindFirstChildOfClass("Atmosphere")
+    if fog then
+        if not fog:GetAttribute("Density") then fog:SetAttribute("Density", fog.Density) end
+
+        fog.Density = value and 0 or fog:GetAttribute("Density")
+    end
+end)
+
+shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("Brightness"):Connect(function()
+    shared.Lighting.Brightness = Options.Brightness.Value
+end))
+
+shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("FogStart"):Connect(function()
+    if Toggles.NoFog.Value then
+        shared.Lighting.FogStart = 0
+    end
+end))
+
+shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("FogEnd"):Connect(function()
+    if Toggles.NoFog.Value then
+        shared.Lighting.FogEnd = math.huge
+    end
+end))
+
+shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("GlobalShadows"):Connect(function()
+    if Toggles.Fullbright.Value then
+        shared.Lighting.GlobalShadows = Toggles.Fullbright.Value
+    end
+end))
+
+Toggles.AntiLag:OnChanged(function(value)
+    for _, object in pairs(workspace:GetDescendants()) do
+        if object:IsA("BasePart") then
+            if not object:GetAttribute("Material") then object:SetAttribute("Material", object.Material) end
+            if not object:GetAttribute("Reflectance") then object:SetAttribute("Reflectance", object.Reflectance) end
+
+            object.Material = value and Enum.Material.Plastic or object:GetAttribute("Material")
+            object.Reflectance = value and 0 or object:GetAttribute("Reflectance")
+        elseif object:IsA("Decal") then
+            if not object:GetAttribute("Transparency") then object:SetAttribute("Transparency", object.Transparency) end
+            object.Transparency = value and 1 or object:GetAttribute("Transparency")
+        end
+    end
+
+    workspace.Terrain.WaterReflectance = if value then 0 else 1
+    workspace.Terrain.WaterTransparency = if value then 0 else 1
+    workspace.Terrain.WaterWaveSize = if value then 0 else 0.05
+    workspace.Terrain.WaterWaveSpeed = if value then 0 else 8
+    shared.Lighting.GlobalShadows = not value
 end)

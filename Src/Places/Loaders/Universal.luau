@@ -18,6 +18,7 @@ Script.ESPTable = {
 shared.Character = shared.LocalPlayer.Character or shared.LocalPlayer.CharacterAdded:Wait()
 
 --// Functions \\--
+shared.Load("Utils", "Assets")
 shared.Load("Utils", "ESP")
 
 shared.Load("Utils", "ConnectionsFuncs")
@@ -64,5 +65,6 @@ end))
 
 --// Load \\--
 task.spawn(Script.Functions.SetupCharacterConnection, shared.Character)
+task.spawn(Script.Functions.SetupChildConnection)
 
 getgenv().mspaint_loaded = true

@@ -165,7 +165,7 @@ ExecutorSupport["_ExecutorName"] = executorName
 ExecutorSupport["_SupportsFileSystem"] = (ExecutorSupport["isfile"] and ExecutorSupport["delfile"] and ExecutorSupport["listfiles"] and ExecutorSupport["writefile"] and ExecutorSupport["makefolder"] and ExecutorSupport["isfolder"])
 
 for name, result in pairs(ExecutorSupport) do
-    if ExecutorSupportInfo[name] ~= nil then 
+    if ExecutorSupportInfo[name] then 
         print(ExecutorSupportInfo[name]) 
     elseif name:gsub("_", "") ~= name then
         print("🛠️ [" .. tostring(name) .. "]", tostring(result))

@@ -6,6 +6,16 @@ local Options = shared.Options
 local Script = shared.Script
 
 --// Functions \\--
+function Script.Functions.SetupChildConnection()
+    for _, child in pairs(shared.Workspace:GetDescendants()) do
+        task.spawn(Script.Functions.ChildCheck, child)
+    end
+
+    shared.Connections["ChildConnection"] = shared.Workspace.DescendantAdded:Connect(function(child)
+        task.delay(0.1, Script.Functions.ChildCheck, child)
+    end)
+end
+
 function Script.Functions.SetupCharacterConnection(newCharacter)
     shared.Character = newCharacter
     shared.Humanoid = shared.Character:WaitForChild("Humanoid")

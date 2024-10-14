@@ -2,7 +2,7 @@ local cloneref = (cloneref or function(instance: any) return instance end)
 
 local Services = {}
 function Services:GetService(serviceName: string)
-    if shared[serviceName] ~= nil then return shared[serviceName] end
+    if shared[serviceName] then return shared[serviceName] end
 
     local service = cloneref(game:GetService(serviceName))
     shared[serviceName] = service
