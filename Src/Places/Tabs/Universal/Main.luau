@@ -40,6 +40,13 @@ local PlayerGroupBox = Tabs.Main:AddLeftGroupbox("Player") do
 
     PlayerGroupBox:AddDivider()
 
+    PlayerGroupBox:AddToggle("InstaInteract", {
+        Text = "Instant Interact",
+        Default = false
+    })
+
+    PlayerGroupBox:AddDivider()
+
     PlayerGroupBox:AddToggle("Noclip", {
         Text = "Noclip",
         Default = false
@@ -109,6 +116,7 @@ Toggles.Fly:OnChanged(function(value)
 
     shared.Fly:Set(value)
 end)
+
 Options.FlySpeed:OnChanged(function(value)
     shared.Fly:SetSpeed(value)
 end)

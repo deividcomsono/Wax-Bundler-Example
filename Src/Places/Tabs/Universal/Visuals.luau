@@ -95,14 +95,6 @@ local ESPTabBox = Tabs.Visuals:AddLeftTabbox() do
 end
 
 local AmbientGroupBox = Tabs.Visuals:AddLeftGroupbox("Ambient") do
-    AmbientGroupBox:AddSlider("Brightness", {
-        Text = "Brightness",
-        Default = 0,
-        Min = 0,
-        Max = 3,
-        Rounding = 1,
-    })
-
     AmbientGroupBox:AddToggle("Fullbright", {
         Text = "Fullbright",
         Default = false,
@@ -203,11 +195,10 @@ Options.ESPArrowCenterOffset:OnChanged(function(value)
 end)
 
 --// Ambient \\--
-Options.Brightness:OnChanged(function(value)
-    shared.Lighting.Brightness = value
-end)
-
 Toggles.Fullbright:OnChanged(function(value)
+    if not value then Script.LastBright = shared.Lighting.Brightness end
+
+    shared.Lighting.Brightness = if value then 2 else shared.Lighting.Brightness
     shared.Lighting.GlobalShadows = value
 end)
 
@@ -227,7 +218,9 @@ Toggles.NoFog:OnChanged(function(value)
 end)
 
 shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("Brightness"):Connect(function()
-    shared.Lighting.Brightness = Options.Brightness.Value
+    if Toggles.Fullbright.Value then
+        shared.Lighting.Brightness = 2
+    end
 end))
 
 shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("FogStart"):Connect(function()

@@ -46,6 +46,12 @@ shared.Connect:GiveSignal(shared.LocalPlayer.CharacterAdded:Connect(function(new
     task.delay(1, Script.Functions.SetupCharacterConnection, newCharacter)
 end))
 
+shared.Connect:GiveSignal(shared.ProximityPromptService.PromptButtonHoldBegan:Connect(function(prompt)
+    if Toggles.InstaInteract.Value then
+        shared.fireproximityprompt(prompt)
+    end
+end))
+
 --// Run Service \\--
 shared.Connect:GiveSignal(shared.RunService.RenderStepped:Connect(function()
     if shared.Character then
