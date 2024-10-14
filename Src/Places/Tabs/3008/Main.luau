@@ -95,7 +95,7 @@ local AutomationGroupBox = Tabs.Main:AddRightGroupbox("Automation") do
     })
 
     AutomationGroupBox:AddDivider()
-    
+
     AutomationGroupBox:AddToggle("AutoTPWhistle", {
         Text = "Enable player whistle teleport",
         Default = false
@@ -105,6 +105,38 @@ local AutomationGroupBox = Tabs.Main:AddRightGroupbox("Automation") do
         SpecialType = "Player",
         Multi = true,
         Text = "Go to player(s)'s whistle."
+    })
+end
+
+local MiscGroupBox = Tabs.Main:AddRightGroupbox("Misc") do
+    MiscGroupBox:AddButton({
+        Text = "Respawn",
+        Func = function()
+            Script.Functions.Respawn()
+        end,
+        DoubleClick = true
+    })
+
+    MiscGroupBox:AddButton({
+        Text = "Rejoin",
+        Func = function()
+            if #shared.Players:GetPlayers() <= 1 then
+                shared.TeleportService:Teleport(game.PlaceId, shared.LocalPlayer)
+                return
+            end
+
+            shared.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, shared.LocalPlayer)
+        end,
+        DoubleClick = true
+    })
+
+    MiscGroupBox:AddButton({
+        Text = "Instant Leave",
+        Func = function()
+            task.delay(0.1, function() game:Shutdown() end)
+            shared.LocalPlayer:Kick("Bye bye! :Content:")
+        end,
+        DoubleClick = true
     })
 end
 
