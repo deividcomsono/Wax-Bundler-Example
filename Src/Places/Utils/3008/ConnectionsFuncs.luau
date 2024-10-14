@@ -119,9 +119,29 @@ function Script.Functions.SetupLightingConnection()
         end
     end))
 
+    if shared.Lighting:FindFirstChild("FoggyDay_Atmosphere") then
+        shared.Connect:GiveSignal(shared.Lighting["FoggyDay_Atmosphere"]:GetPropertyChangedSignal("Density"):Connect(function()
+            if shared.Lighting["FoggyDay_Atmosphere"].Density ~= Script.CurrentFoggyDayDensity and shared.Lighting["FoggyDay_Atmosphere"].Density ~= 0 then
+                Script.CurrentFoggyDayDensity = shared.Lighting["FoggyDay_Atmosphere"].Density
+            end
+
+            if Toggles.NoFog.Value then
+                shared.Lighting["FoggyDay_Atmosphere"].Density = 0
+            end
+        end))
+    end
+
     if Toggles.Fullbright.Value then
         shared.Lighting.Ambient = Color3.new(1, 1, 1)
         shared.Lighting.ColorShift_Bottom = Color3.new(1, 1, 1)
         shared.Lighting.ColorShift_Top = Color3.new(1, 1, 1)
+    end
+
+    if Toggles.NoFog.Value then
+        shared.Lighting.FogEnd = 9e9
+
+        if shared.Lighting:FindFirstChild("FoggyDay_Atmosphere") then
+            shared.Lighting["FoggyDay_Atmosphere"].Density = 0
+        end
     end
 end

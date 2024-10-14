@@ -6,10 +6,15 @@ local Options = shared.Options
 local Script = shared.Script
 
 Script.DidGodmode = false
+
+Script.DefaultFogEnd = shared.Lighting.FogEnd
+
 Script.CurrentAmbient = shared.Lighting.Ambient
 Script.CurrentColorShift_Bottom = shared.Lighting.ColorShift_Bottom
 Script.CurrentColorShift_Top = shared.Lighting.ColorShift_Top
-Script.DefaultFogEnd = shared.Lighting.FogEnd
+if shared.Lighting:FindFirstChild("FoggyDay_Atmosphere") then
+    Script.CurrentFoggyDayDensity = shared.Lighting["FoggyDay_Atmosphere"].Density
+end
 
 Script.Physical = workspace:WaitForChild("GameObjects"):WaitForChild("Physical")
 Script.Map = Script.Physical:WaitForChild("Map")

@@ -55,7 +55,15 @@ end)
 Toggles.NoFog:OnChanged(function(value)
     if value then
         shared.Lighting.FogEnd = 9e9
+
+        if shared.Lighting:FindFirstChild("FoggyDay_Atmosphere") then
+            shared.Lighting["FoggyDay_Atmosphere"].Density = 0
+        end
     else
         shared.Lighting.FogEnd = Script.DefaultFogEnd
+
+        if shared.Lighting:FindFirstChild("FoggyDay_Atmosphere") and Script["CurrentFoggyDayDensity"] then
+            shared.Lighting["FoggyDay_Atmosphere"].Density = Script.CurrentFoggyDayDensity
+        end
     end
 end)
