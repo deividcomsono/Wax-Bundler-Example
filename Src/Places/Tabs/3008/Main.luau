@@ -88,6 +88,11 @@ local AutomationGroupBox = Tabs.Main:AddRightGroupbox("Automation") do
         Text = "Auto Respawn",
         Default = false
     })
+
+    AutomationGroupBox:AddToggle("AutoPush", {
+        Text = "Auto Push Employees",
+        Default = false
+    })
 end
 
 --// Player \\--
@@ -166,4 +171,20 @@ end)
 
 Options.FlySpeed:OnChanged(function(value)
     shared.Fly:SetSpeed(value)
+end)
+
+Toggles.AutoPush:OnChanged(function(value)
+    if value then
+        task.spawn(function()
+            repeat task.wait(0.1)
+                for _, employee in pairs(Script.Employees:GetChildren()) do
+                    if Script.Functions.DistanceFromCharacter(employee) <= 20 and employee:FindFirstChild("Enemy") then
+                        Script.Action:InvokeServer("ShoveEmployee", {
+                            Humanoid = employee.Enemy
+                        })
+                    end
+                end
+            until not Toggles.AutoPush.Value or shared.Library.Unloaded
+        end)
+    end
 end)

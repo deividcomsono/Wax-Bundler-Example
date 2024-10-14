@@ -12,6 +12,7 @@ function Script.Functions.SetupCharacterConnection(newCharacter)
 
     Script.System = shared.Character:WaitForChild("System")
     Script.Event = Script.System:WaitForChild("Event")
+    Script.Action = Script.System:WaitForChild("Action")
 
     Script.Functions.SetupCharacterDeathConnection(newCharacter)
 
