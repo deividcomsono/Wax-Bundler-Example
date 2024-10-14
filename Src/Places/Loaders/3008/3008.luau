@@ -4,9 +4,13 @@ local Options = shared.Options
 
 --// Variables \\--
 local Script = shared.Script
+
 Script.DidGodmode = false
 
-Script.Map = workspace:WaitForChild("GameObjects"):WaitForChild("Physical"):WaitForChild("Map")
+Script.Physical = workspace:WaitForChild("GameObjects"):WaitForChild("Physical")
+Script.Map = Script.Physical:WaitForChild("Map")
+Script.Employees = Script.Physical:WaitForChild("Employees")
+
 Script.DeathScreen = shared.PlayerGui:WaitForChild("DeathScreen")
 
 --// Player Variables \\--
@@ -15,6 +19,7 @@ shared.Humanoid = nil
 
 Script.System = shared.Character:WaitForChild("System")
 Script.Event = Script.System:WaitForChild("Event")
+Script.Action = Script.System:WaitForChild("Action")
 
 --// Functions \\--
 Script._mspaint_custom_captions = Instance.new("ScreenGui") do
@@ -82,6 +87,44 @@ Script._mspaint_custom_captions = Instance.new("ScreenGui") do
     end
 end
 
+function Script.Functions.DistanceFromCharacter(position: Instance | Vector3, getPositionFromCamera: boolean | nil)
+    if not position then return 9e9 end
+    if typeof(position) == "Instance" then
+        position = position:GetPivot().Position
+    end
+
+    if getPositionFromCamera and (shared.Camera or workspace.CurrentCamera) then
+        local cameraPosition = if shared.Camera then shared.Camera.CFrame.Position else workspace.CurrentCamera.CFrame.Position
+
+        return (cameraPosition - position).Magnitude
+    end
+
+    if shared.RootPart then
+        return (shared.RootPart.Position - position).Magnitude
+    elseif shared.Camera then
+        return (shared.Camera.CFrame.Position - position).Magnitude
+    end
+
+    return 9e9
+end
+
+function Script.Functions.IsNaN(x)
+    return x ~= x
+end
+
+function Script.Functions.Respawn()
+    if shared.Humanoid.Health > 0 or Script.Functions.IsNaN(shared.Humanoid.Health) then
+        shared.Character:BreakJoints()
+    end
+
+    repeat task.wait(0.1) until Script.DeathScreen.BG.Visible
+    
+    Script.Event:FireServer("Respawn")
+
+    Script.DeathScreen.DeathSound:Stop()
+    Script.DeathScreen.DeathMusic:Stop()
+end
+
 shared.Load("Utils", "ConnectionsFuncs")
 
 --// Tabs \\--
@@ -119,8 +162,14 @@ shared.Connect:GiveSignal(shared.LocalPlayer.CharacterAdded:Connect(function(new
     task.delay(1, Script.Functions.SetupCharacterConnection, newCharacter)
 end))
 
+shared.Connect:GiveSignal(shared.Camera.ChildAdded:Connect(Script.Functions.SetupCameraConnection))
+
 --// Load \\--
 task.spawn(Script.Functions.SetupCharacterConnection, shared.Character)
+
+for _, child in pairs(shared.Camera:GetChildren()) do
+    Script.Functions.SetupCameraConnection(child)
+end
 
 --// Unload \\--
 shared.Library:OnUnload(function()
