@@ -156,6 +156,40 @@ function Script.Functions.SetupBloxstrapRPCConnection()
     Script.Functions.UpdateBloxstrapRPC()
 end
 
+function Script.Functions.IsLoaded(model)
+    return model.PrimaryPart ~= nil
+end
+
+function Script.Functions.SetupChild(child, options)
+    if not Script.Functions.IsLoaded(child) then
+        child:GetPropertyChangedSignal("PrimaryPart"):Wait()
+    end
+
+    repeat task.wait() until options["Condition"]() or shared.Library.Unloaded
+    if shared.Library.Unloaded then return end
+
+    local esp = Script.Functions[options["ESPfunction"]](child)
+
+    local shouldDestroyESP = false
+    if Script.Functions.IsLoaded(child) then
+        task.spawn(function()
+            child:GetPropertyChangedSignal("PrimaryPart"):Wait()
+            shouldDestroyESP = true
+        end)
+
+        task.spawn(function()
+            repeat task.wait() until shouldDestroyESP or not options["Condition"]() or shared.Library.Unloaded
+            shouldDestroyESP = true
+        end)
+    end
+    
+    repeat task.wait() until shouldDestroyESP
+    esp.Destroy()
+
+    if shared.Library.Unloaded then return end
+    Script.Functions.SetupChild(child, options)
+end
+
 function Script.Functions.SetupExploitInfModulesConnection()
     shared.Connect:GiveSignal(Script.PlayerStats:WaitForChild("Energy").Value:GetPropertyChangedSignal("Text"):Connect(function()
         if Toggles.InfiniteEnergy.Value and not Toggles.Godmode.Value then
@@ -175,5 +209,77 @@ function Script.Functions.SetupExploitInfModulesConnection()
                 }
             })
         end
+    end))
+end
+
+function Script.Functions.SetupOtherPlayerConnection()
+    for _, player in pairs(shared.Players:GetPlayers()) do
+        if player == shared.LocalPlayer then continue end
+
+        task.spawn(Script.Functions.SetupChild, player.Character, {
+            Condition = function()
+                return Toggles.PlayerESP and Toggles.PlayerESP.Value
+            end,
+            ESPfunction = "PlayerESP",
+            Descendant = player.Character.Parent
+        })
+    end
+
+    shared.Connect:GiveSignal(shared.Players.PlayerAdded:Connect(function(player)
+        if player == shared.LocalPlayer then return end
+
+        task.spawn(Script.Functions.SetupChild, player.Character, {
+            Condition = function()
+                return Toggles.PlayerESP and Toggles.PlayerESP.Value
+            end,
+            ESPfunction = "PlayerESP",
+            Descendant = player.Character.Parent
+        })
+    end))
+end
+
+
+function Script.Functions.SetupEmployeeConnection()
+    for _, employee in ipairs(Script.Employees:GetChildren()) do
+        task.spawn(Script.Functions.SetupChild, employee, {
+            Condition = function()
+                return Toggles.EmployeeESP and Toggles.EmployeeESP.Value
+            end,
+            ESPfunction = "EmployeeESP",
+            Descendant = Script.Employees
+        })
+    end
+
+    shared.Connect:GiveSignal(Script.Employees.ChildAdded:Connect(function(employee)
+        task.spawn(Script.Functions.SetupChild, employee, {
+            Condition = function()
+                return Toggles.EmployeeESP and Toggles.EmployeeESP.Value
+            end,
+            ESPfunction = "EmployeeESP",
+            Descendant = Script.Employees
+        })
+    end))
+end
+
+
+function Script.Functions.SetupItemConnection()
+    for _, item in ipairs(Script.Items:GetChildren()) do
+        task.spawn(Script.Functions.SetupChild, item, {
+            Condition = function()
+                return Toggles.ItemESP and Toggles.ItemESP.Value
+            end,
+            ESPfunction = "ItemESP",
+            Descendant = Script.Items
+        })
+    end
+
+    shared.Connect:GiveSignal(Script.Items.ChildAdded:Connect(function(item)
+        task.spawn(Script.Functions.SetupChild, item, {
+            Condition = function()
+                return Toggles.ItemESP and Toggles.ItemESP.Value
+            end,
+            ESPfunction = "ItemESP",
+            Descendant = Script.Items
+        })
     end))
 end

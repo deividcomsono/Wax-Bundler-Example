@@ -18,8 +18,44 @@ end
 
 Script.Physical = workspace:WaitForChild("GameObjects"):WaitForChild("Physical")
 Script.Map = Script.Physical:WaitForChild("Map")
+Script.Items = Script.Physical:WaitForChild("Items")
 Script.Employees = Script.Physical:WaitForChild("Employees")
 
+Script.FeatureConnections = {
+    Item = {},
+    Employee = {},
+    Player = {},
+    ESPTemp = {}
+}
+
+Script.ESPTable = {
+    Item = {},
+    Employee = {},
+    Player = {}
+}
+
+Script.InteractableItems = {
+	"Medkit",
+	"Pizza",
+	"Beans",
+	"Meatballs",
+	"Apple",
+	"Lemon",
+	"Lemon Slice",
+	"Burger",
+	"Banana",
+	"Hotdog",
+	"Striped Donut",
+	"Chips",
+	"Ice Cream",
+	"Chocolate",
+	"Cookie",
+	"Bloxy Soda",
+	"2 Litre Dr. Bob",
+    "Dr. Bob Soda",
+	"Water",
+	"Jeff"
+}
 --// Player Variables \\--
 shared.Character = shared.LocalPlayer.Character or shared.LocalPlayer.CharacterAdded:Wait()
 shared.Humanoid = nil
@@ -177,6 +213,7 @@ function Script.Functions.Respawn()
 end
 
 shared.Load("Utils", "ConnectionsFuncs")
+shared.Load("Utils", "ESP")
 
 --// Tabs \\--
 Script.Tabs = {
@@ -189,27 +226,6 @@ shared.Load("Tabs", "Main")
 shared.Load("Tabs", "Exploits")
 shared.Load("Tabs", "Visuals")
 --// Metamethod hooks \\--
-
---// Function hooks \\--
-if wax.shared.ExecutorSupport["hookfunction"] and wax.shared.ExecutorSupport["getcallingscript"] then
-    shared.Hooks.instantInteract = hookfunction(TweenInfo.new, newcclosure(function(self, ...)
-        if not shared.Library.Unloaded then
-            if Toggles.InstantInteract.Value then
-                local caller = getcallingscript()
-    
-                local isInputController = caller and caller.Name == "InputControl"
-                local isValidArgument = self and typeof(self) == "number"
-    
-                if isInputController and isValidArgument then
-                    self = 0
-                end
-            end
-        end
-
-        return shared.Hooks.instantInteract(self, ...)
-    end))
-end
-
 if wax.shared.ExecutorSupport["hookmetamethod"] and wax.shared.ExecutorSupport["getnamecallmethod"] then
     if wax.shared.ExecutorSupport["require"] then
         Script.ToolGStep = wax.require(Script.ToolSystem).GlobalRenderStep
@@ -283,6 +299,26 @@ if wax.shared.ExecutorSupport["hookmetamethod"] and wax.shared.ExecutorSupport["
     end))
 end
 
+--// Function hooks \\--
+if wax.shared.ExecutorSupport["hookfunction"] and wax.shared.ExecutorSupport["getcallingscript"] then
+    shared.Hooks.instantInteract = hookfunction(TweenInfo.new, newcclosure(function(self, ...)
+        if not shared.Library.Unloaded then
+            if Toggles.InstantInteract.Value then
+                local caller = getcallingscript()
+    
+                local isInputController = caller and caller.Name == "InputControl"
+                local isValidArgument = self and typeof(self) == "number"
+    
+                if isInputController and isValidArgument then
+                    self = 0
+                end
+            end
+        end
+
+        return shared.Hooks.instantInteract(self, ...)
+    end))
+end
+
 --// Connections \\--
 shared.Connect:GiveSignal(shared.LocalPlayer.CharacterAdded:Connect(function(newCharacter)
     task.delay(1, Script.Functions.SetupCharacterConnection, newCharacter)
@@ -290,11 +326,19 @@ end))
 
 shared.Connect:GiveSignal(shared.Camera.ChildAdded:Connect(Script.Functions.CameraChildAdded))
 
+shared.Connect:GiveSignal(shared.Players.PlayerAdded:Connect(function(player)
+    task.spawn(Script.Functions.SetupOtherPlayerConnection, player)
+end))
+
 --// Load \\--
 task.spawn(Script.Functions.SetupCharacterConnection, shared.Character)
 task.spawn(Script.Functions.SetupLightingConnection)
 task.spawn(Script.Functions.SetupExploitInfModulesConnection)
 task.spawn(Script.Functions.SetupBloxstrapRPCConnection)
+
+task.spawn(Script.Functions.SetupEmployeeConnection)
+task.spawn(Script.Functions.SetupItemConnection)
+task.spawn(Script.Functions.SetupOtherPlayerConnection)
 
 for _, child in pairs(shared.Camera:GetChildren()) do
     Script.Functions.CameraChildAdded(child)
