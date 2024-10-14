@@ -87,6 +87,24 @@ shared.Load("Tabs", "Main")
 shared.Load("Tabs", "Visuals")
 --// Metamethod hooks \\--
 
+--// Function hooks \\--
+if wax.shared.ExecutorSupport["hookfunction"] and wax.shared.ExecutorSupport["getcallingscript"] then
+    shared.Hooks.instantInteract = hookfunction(TweenInfo.new, newcclosure(function(self, ...)
+        if Toggles.InstantInteract.Value then
+            local caller = getcallingscript()
+            
+            local isInputController = caller and caller.Name == "InputControl"
+            local isValidArgument = self and typeof(self) == "number"
+
+            if isInputController and isValidArgument then
+                self = 0
+            end
+        end
+
+        return shared.Hooks.instantInteract(self, ...)
+    end))
+end
+
 --// Connections \\--
 shared.Connect:GiveSignal(shared.LocalPlayer.CharacterAdded:Connect(function(newCharacter)
     task.delay(1, Script.Functions.SetupCharacterConnection, newCharacter)
@@ -97,7 +115,9 @@ task.spawn(Script.Functions.SetupCharacterConnection, shared.Character)
 
 --// Unload \\--
 shared.Library:OnUnload(function()
-    print("Unloading " .. shared.ScriptName .. "...")
+    if wax.shared.ExecutorSupport["hookfunction"] and wax.shared.ExecutorSupport["getcallingscript"] then
+        hookfunction(TweenInfo.new, shared.Hooks.instantInteract)
+    end
 end)
 
 getgenv().mspaint_loaded = true

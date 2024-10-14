@@ -40,6 +40,14 @@ local PlayerGroupBox = Tabs.Main:AddLeftGroupbox("Player") do
 
     PlayerGroupBox:AddDivider()
 
+    PlayerGroupBox:AddToggle("InstantInteract", {
+        Text = "Instant Interact",
+        Default = false,
+        Visible = wax.shared.ExecutorSupport["hookfunction"] and wax.shared.ExecutorSupport["getcallingscript"]
+    })
+
+    PlayerGroupBox:AddDivider()
+
     PlayerGroupBox:AddToggle("Noclip", {
         Text = "Noclip",
         Default = false
@@ -68,6 +76,10 @@ local PlayerGroupBox = Tabs.Main:AddLeftGroupbox("Player") do
         Rounding = 0,
         Compact = true
     })
+end
+
+local AutomationGroupBox = Tabs.Main:AddRightGroupbox("Automation") do
+    --AutomationGroupBox:AddToggle("")
 end
 
 --// Player \\--

@@ -35,6 +35,7 @@ test("delfolder", delfolder, false)
 test("loadfile", loadfile, false)
 
 test("queue_on_teleport", queue_on_teleport, false)
+test("getcallingscript", getcallingscript, false)
 
 test("require", function()
     wax.require(shared.Players.LocalPlayer:WaitForChild("PlayerScripts", math.huge):WaitForChild("PlayerModule", 5)) -- ReplicatedStorage:WaitForChild("ModuleScript")
@@ -51,6 +52,17 @@ test("getnamecallmethod", function()
     end)
 
     assert(getnamecallmethod() == "NAMECALL_METHODS_ARE_IMPORTANT", "getnamecallmethod did not return the real namecall method")
+end)
+test("hookfunction", function()
+    local function test()
+		return true
+	end
+	local ref = hookfunction(test, function()
+		return false
+	end)
+	assert(test() == false, "Function should return false")
+	assert(ref() == true, "Original function should return true")
+	assert(test ~= ref, "Original function should not be same as the reference")
 end)
 test("firesignal", function()
     local event = Instance.new("BindableEvent")
@@ -156,7 +168,7 @@ for name, result in pairs(ExecutorSupport) do
     if ExecutorSupportInfo[name] ~= nil then 
         print(ExecutorSupportInfo[name]) 
     elseif name:gsub("_", "") ~= name then
-        print("🔧 [" .. tostring(name) .. "]", tostring(result))
+        print("🛠️ [" .. tostring(name) .. "]", tostring(result))
     else
         print("❓ [" .. tostring(name) .. "]", tostring(result))
     end
