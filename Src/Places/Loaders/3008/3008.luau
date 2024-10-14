@@ -189,39 +189,66 @@ if wax.shared.ExecutorSupport["hookmetamethod"] and wax.shared.ExecutorSupport["
         local method = getnamecallmethod()
         local args = {...}
 
-        if Toggles.InfiniteInventory.Value and wax.shared.ExecutorSupport["require"] then
-            if method == "InvokeServer" and self.Name == "Action" and args[1] == "Store" and args[3] ~= "_internal_origin_mspaint" then
-                require(Script.ToolSystem).GlobalRenderStep = function() end
-                local parentedTools = {}
-                
-                for _, tool in pairs(shared.LocalPlayer.Backpack:GetChildren()) do
-                    table.insert(parentedTools, tool)
-                
-                    shared.Humanoid:EquipTool(tool)
-                    tool.Parent = workspace
+        local isAction = method == "InvokeServer" and self.Name == "Action"
+
+        if isAction then
+            local actionType = args[1]
+            local actionData = args[2]
+
+            if actionType == "Store" and args[3] ~= "_internal_origin_mspaint" then
+                if Toggles.InfiniteInventory.Value and wax.shared.ExecutorSupport["require"] then
+                    require(Script.ToolSystem).GlobalRenderStep = function() end
+                    local parentedTools = {}
+                    
+                    for _, tool in pairs(shared.LocalPlayer.Backpack:GetChildren()) do
+                        table.insert(parentedTools, tool)
+                    
+                        shared.Humanoid:EquipTool(tool)
+                        tool.Parent = workspace
+                    end
+    
+                    task.wait()
+                    local modelName = actionData.Model.Name
+    
+                    Script.Action:InvokeServer("Store", actionData, "_internal_origin_mspaint")
+                    
+                    local newTool = shared.LocalPlayer.Backpack:WaitForChild(modelName)
+    
+                    shared.Humanoid:EquipTool(newTool)
+    
+                    for _, tool in pairs(parentedTools)  do
+                        tool.Parent = shared.Character
+                        shared.Humanoid:EquipTool(tool)
+                    end
+                    
+                    shared.Humanoid:UnequipTools()
+    
+                    require(Script.ToolSystem).GlobalRenderStep = Script.ToolGStep
+
+                    return
                 end
-
-                task.wait()
-                local modelName = args[2].Model.Name
-
-                Script.Action:InvokeServer("Store", args[2], "_internal_origin_mspaint")
-                
-                local newTool = shared.LocalPlayer.Backpack:WaitForChild(modelName)
-
-                shared.Humanoid:EquipTool(newTool)
-
-                for _, tool in pairs(parentedTools)  do
-                    tool.Parent = shared.Character
-                    shared.Humanoid:EquipTool(tool)
-                end
-                
-                shared.Humanoid:UnequipTools()
-
-                require(Script.ToolSystem).GlobalRenderStep = Script.ToolGStep
-                return
             end
+    
+            if actionType == "Drop" then
+                if Toggles.ThrowPowerBoost.Value then
+                    actionData.ThrowPower = Options.ThrowPower.Value
+                    actionData.Throw = true
+                    actionData.CameraCFrame = actionData.CameraCFrame * Options.ThrowPower.Value
+                end
+
+                if Toggles.DeleteObject.Value then
+                    actionData.ThrowPower = 555
+                    actionData.Throw = true
+                    actionData.CameraCFrame = actionData.CameraCFrame * -1000
+                end
+            end
+
+            return shared.Hooks.mtHook(self, table.unpack({
+                actionType,
+                actionData
+            }))
         end
-        
+
         return shared.Hooks.mtHook(self, ...)
     end))
 end
