@@ -88,12 +88,40 @@ function Script.Functions.SetupCharacterDeathConnection(newCharacter)
     end))
 end
 
-function Script.Functions.SetupCameraConnection(child)
-    if Toggles.AutoTPWhistle.Value then
-        for playerName, _ in pairs(Options.AutoTPWhistlePlayers.Value) do
-            if child.Name == playerName .. "_EchoLocation" then
-                shared.Character:PivotTo(child.CFrame)
-            end
+function Script.Functions.SetupLightingConnection()
+    shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("Ambient"):Connect(function()
+        if shared.Lighting.Ambient ~= Script.CurrentAmbient and shared.Lighting.Ambient ~= Color3.new(1, 1, 1) then
+            Script.CurrentAmbient = shared.Lighting.Ambient
         end
+
+        if Toggles.Fullbright.Value then
+            shared.Lighting.Ambient = Color3.new(1, 1, 1)
+        end
+    end))
+
+    shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("ColorShift_Bottom"):Connect(function()
+        if shared.Lighting.ColorShift_Bottom ~= Script.CurrentColorShift_Bottom and shared.Light.ColorShift_Bottom ~= Color3.new(1, 1, 1) then
+            Script.CurrentColorShift_Bottom = shared.Lighting.ColorShift_Bottom
+        end
+
+        if Toggles.Fullbright.Value then
+            shared.Lighting.ColorShift_Bottom = Color3.new(1, 1, 1)
+        end
+    end))
+
+    shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("ColorShift_Top"):Connect(function()
+        if shared.Lighting.ColorShift_Top ~= Script.CurrentColorShift_Top and shared.Light.ColorShift_Top ~= Color3.new(1, 1, 1) then
+            Script.CurrentColorShift_Top = shared.Lighting.ColorShift_Top
+        end
+
+        if Toggles.Fullbright.Value then
+            shared.Lighting.ColorShift_Top = Color3.new(1, 1, 1)
+        end
+    end))
+
+    if Toggles.Fullbright.Value then
+        shared.Lighting.Ambient = Color3.new(1, 1, 1)
+        shared.Lighting.ColorShift_Bottom = Color3.new(1, 1, 1)
+        shared.Lighting.ColorShift_Top = Color3.new(1, 1, 1)
     end
 end
