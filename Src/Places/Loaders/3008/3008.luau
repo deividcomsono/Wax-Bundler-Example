@@ -193,14 +193,16 @@ shared.Load("Tabs", "Visuals")
 --// Function hooks \\--
 if wax.shared.ExecutorSupport["hookfunction"] and wax.shared.ExecutorSupport["getcallingscript"] then
     shared.Hooks.instantInteract = hookfunction(TweenInfo.new, newcclosure(function(self, ...)
-        if Toggles.InstantInteract.Value then
-            local caller = getcallingscript()
-
-            local isInputController = caller and caller.Name == "InputControl"
-            local isValidArgument = self and typeof(self) == "number"
-
-            if isInputController and isValidArgument then
-                self = 0
+        if not shared.Library.Unloaded then
+            if Toggles.InstantInteract.Value then
+                local caller = getcallingscript()
+    
+                local isInputController = caller and caller.Name == "InputControl"
+                local isValidArgument = self and typeof(self) == "number"
+    
+                if isInputController and isValidArgument then
+                    self = 0
+                end
             end
         end
 
@@ -300,10 +302,6 @@ end
 
 --// Unload \\--
 shared.Library:OnUnload(function()
-    if wax.shared.ExecutorSupport["hookfunction"] and wax.shared.ExecutorSupport["getcallingscript"] then
-        hookfunction(TweenInfo.new, shared.Hooks.instantInteract)
-    end
-
     if wax.shared.ExecutorSupport["hookmetamethod"] and wax.shared.ExecutorSupport["getnamecallmethod"] then
         hookmetamethod(game, "__namecall", shared.Hooks.mtHook)
     end
