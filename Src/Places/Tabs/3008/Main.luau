@@ -93,6 +93,19 @@ local AutomationGroupBox = Tabs.Main:AddRightGroupbox("Automation") do
         Text = "Auto Push Employees",
         Default = false
     })
+
+    AutomationGroupBox:AddDivider()
+    
+    AutomationGroupBox:AddToggle("AutoTPWhistle", {
+        Text = "Enable player whistle teleport",
+        Default = false
+    })
+
+    AutomationGroupBox:AddDropdown("AutoTPWhistlePlayers", {
+        SpecialType = "Player",
+        Multi = true,
+        Text = "Go to player(s)'s whistle."
+    })
 end
 
 --// Player \\--

@@ -87,3 +87,13 @@ function Script.Functions.SetupCharacterDeathConnection(newCharacter)
         end
     end))
 end
+
+function Script.Functions.SetupCameraConnection(child)
+    if Toggles.AutoTPWhistle.Value then
+        for playerName, _ in pairs(Options.AutoTPWhistlePlayers.Value) do
+            if child.Name == playerName .. "_EchoLocation" then
+                shared.Character:PivotTo(child.CFrame)
+            end
+        end
+    end
+end

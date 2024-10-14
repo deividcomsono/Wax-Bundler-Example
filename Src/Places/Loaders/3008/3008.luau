@@ -162,8 +162,14 @@ shared.Connect:GiveSignal(shared.LocalPlayer.CharacterAdded:Connect(function(new
     task.delay(1, Script.Functions.SetupCharacterConnection, newCharacter)
 end))
 
+shared.Connect:GiveSignal(shared.Camera.ChildAdded:Connect(Script.Functions.SetupCameraConnection))
+
 --// Load \\--
 task.spawn(Script.Functions.SetupCharacterConnection, shared.Character)
+
+for _, child in pairs(shared.Camera:GetChildren()) do
+    Script.Functions.SetupCameraConnection(child)
+end
 
 --// Unload \\--
 shared.Library:OnUnload(function()
