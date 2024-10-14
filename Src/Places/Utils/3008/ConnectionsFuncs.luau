@@ -9,6 +9,10 @@ local Script = shared.Script
 function Script.Functions.SetupCharacterConnection(newCharacter)
     shared.Character = newCharacter
     shared.Humanoid = shared.Character:WaitForChild("Humanoid")
+
+    Script.System = shared.Character:WaitForChild("System")
+    Script.Event = Script.System:WaitForChild("Event")
+
     if shared.Humanoid then
         Script.LastSpeed = shared.Humanoid.WalkSpeed
 
@@ -33,6 +37,23 @@ function Script.Functions.SetupCharacterConnection(newCharacter)
                 if Toggles.JumpPowerHack.Value then shared.Humanoid.JumpHeight = Options.JumpPower.Value end
             end
         end))
+    end
+
+    if Toggles.Godmode.Value then
+        Script.DidGodmode = true
+
+        repeat task.wait() until #Script.Map.Floor:GetChildren() > 0
+        
+        Script.Event:FireServer("FallDamage", {
+            Sliding = false,
+            OriginalDamage = (0/0),
+            Sound = "LR^SS",
+            Softened = true,
+            Broken = false,
+            Model = Script.Map.Floor:FindFirstChildOfClass("Model"),
+            Range = 19,
+            Damage = (0/0)
+        })
     end
 
     if Toggles.NoFall.Value then

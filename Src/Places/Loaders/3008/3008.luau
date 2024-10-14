@@ -4,10 +4,17 @@ local Options = shared.Options
 
 --// Variables \\--
 local Script = shared.Script
+Script.DidGodmode = false
+
+Script.Map = workspace:WaitForChild("GameObjects"):WaitForChild("Physical"):WaitForChild("Map")
+Script.DeathScreen = shared.PlayerGui:WaitForChild("DeathScreen")
 
 --// Player Variables \\--
 shared.Character = shared.LocalPlayer.Character or shared.LocalPlayer.CharacterAdded:Wait()
 shared.Humanoid = nil
+
+Script.System = shared.Character:WaitForChild("System")
+Script.Event = Script.System:WaitForChild("Event")
 
 --// Functions \\--
 Script._mspaint_custom_captions = Instance.new("ScreenGui") do
@@ -80,10 +87,12 @@ shared.Load("Utils", "ConnectionsFuncs")
 --// Tabs \\--
 Script.Tabs = {
     Main = shared.Window:AddTab("Main"),
+    Exploits = shared.Window:AddTab("Exploits"),
     Visuals = shared.Window:AddTab("Visuals"),
 }
 
 shared.Load("Tabs", "Main")
+shared.Load("Tabs", "Exploits")
 shared.Load("Tabs", "Visuals")
 --// Metamethod hooks \\--
 
@@ -92,7 +101,7 @@ if wax.shared.ExecutorSupport["hookfunction"] and wax.shared.ExecutorSupport["ge
     shared.Hooks.instantInteract = hookfunction(TweenInfo.new, newcclosure(function(self, ...)
         if Toggles.InstantInteract.Value then
             local caller = getcallingscript()
-            
+
             local isInputController = caller and caller.Name == "InputControl"
             local isValidArgument = self and typeof(self) == "number"
 
