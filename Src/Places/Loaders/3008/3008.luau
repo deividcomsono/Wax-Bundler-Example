@@ -7,11 +7,21 @@ local Script = shared.Script
 
 Script.DidGodmode = false
 
+Script.DefaultFogEnd = shared.Lighting.FogEnd
+
+Script.CurrentAmbient = shared.Lighting.Ambient
+Script.CurrentColorShift_Bottom = shared.Lighting.ColorShift_Bottom
+Script.CurrentColorShift_Top = shared.Lighting.ColorShift_Top
+if shared.Lighting:FindFirstChild("FoggyDay_Atmosphere") then
+    Script.CurrentFoggyDayDensity = shared.Lighting["FoggyDay_Atmosphere"].Density
+end
+
 Script.Physical = workspace:WaitForChild("GameObjects"):WaitForChild("Physical")
 Script.Map = Script.Physical:WaitForChild("Map")
 Script.Employees = Script.Physical:WaitForChild("Employees")
 
 Script.DeathScreen = shared.PlayerGui:WaitForChild("DeathScreen")
+Script.Settings = shared.PlayerGui:WaitForChild("PlayerInfo"):WaitForChild("Settings")
 
 --// Player Variables \\--
 shared.Character = shared.LocalPlayer.Character or shared.LocalPlayer.CharacterAdded:Wait()
@@ -108,6 +118,16 @@ function Script.Functions.DistanceFromCharacter(position: Instance | Vector3, ge
     return 9e9
 end
 
+function Script.Functions.CameraChildAdded(child)
+    if Toggles.AutoTPWhistle.Value then
+        for playerName, _ in pairs(Options.AutoTPWhistlePlayers.Value) do
+            if child.Name == playerName .. "_EchoLocation" then
+                shared.Character:PivotTo(child.CFrame)
+            end
+        end
+    end
+end
+
 function Script.Functions.IsNaN(x)
     return x ~= x
 end
@@ -162,13 +182,14 @@ shared.Connect:GiveSignal(shared.LocalPlayer.CharacterAdded:Connect(function(new
     task.delay(1, Script.Functions.SetupCharacterConnection, newCharacter)
 end))
 
-shared.Connect:GiveSignal(shared.Camera.ChildAdded:Connect(Script.Functions.SetupCameraConnection))
+shared.Connect:GiveSignal(shared.Camera.ChildAdded:Connect(Script.Functions.CameraChildAdded))
 
 --// Load \\--
 task.spawn(Script.Functions.SetupCharacterConnection, shared.Character)
+task.spawn(Script.Functions.SetupLightingConnection)
 
 for _, child in pairs(shared.Camera:GetChildren()) do
-    Script.Functions.SetupCameraConnection(child)
+    Script.Functions.CameraChildAdded(child)
 end
 
 --// Unload \\--

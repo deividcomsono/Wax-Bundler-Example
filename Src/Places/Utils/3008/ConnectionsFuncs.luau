@@ -88,12 +88,60 @@ function Script.Functions.SetupCharacterDeathConnection(newCharacter)
     end))
 end
 
-function Script.Functions.SetupCameraConnection(child)
-    if Toggles.AutoTPWhistle.Value then
-        for playerName, _ in pairs(Options.AutoTPWhistlePlayers.Value) do
-            if child.Name == playerName .. "_EchoLocation" then
-                shared.Character:PivotTo(child.CFrame)
+function Script.Functions.SetupLightingConnection()
+    shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("Ambient"):Connect(function()
+        if shared.Lighting.Ambient ~= Script.CurrentAmbient and shared.Lighting.Ambient ~= Color3.new(1, 1, 1) then
+            Script.CurrentAmbient = shared.Lighting.Ambient
+        end
+
+        if Toggles.Fullbright.Value then
+            shared.Lighting.Ambient = Color3.new(1, 1, 1)
+        end
+    end))
+
+    shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("ColorShift_Bottom"):Connect(function()
+        if shared.Lighting.ColorShift_Bottom ~= Script.CurrentColorShift_Bottom and shared.Light.ColorShift_Bottom ~= Color3.new(1, 1, 1) then
+            Script.CurrentColorShift_Bottom = shared.Lighting.ColorShift_Bottom
+        end
+
+        if Toggles.Fullbright.Value then
+            shared.Lighting.ColorShift_Bottom = Color3.new(1, 1, 1)
+        end
+    end))
+
+    shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("ColorShift_Top"):Connect(function()
+        if shared.Lighting.ColorShift_Top ~= Script.CurrentColorShift_Top and shared.Light.ColorShift_Top ~= Color3.new(1, 1, 1) then
+            Script.CurrentColorShift_Top = shared.Lighting.ColorShift_Top
+        end
+
+        if Toggles.Fullbright.Value then
+            shared.Lighting.ColorShift_Top = Color3.new(1, 1, 1)
+        end
+    end))
+
+    if shared.Lighting:FindFirstChild("FoggyDay_Atmosphere") then
+        shared.Connect:GiveSignal(shared.Lighting["FoggyDay_Atmosphere"]:GetPropertyChangedSignal("Density"):Connect(function()
+            if shared.Lighting["FoggyDay_Atmosphere"].Density ~= Script.CurrentFoggyDayDensity and shared.Lighting["FoggyDay_Atmosphere"].Density ~= 0 then
+                Script.CurrentFoggyDayDensity = shared.Lighting["FoggyDay_Atmosphere"].Density
             end
+
+            if Toggles.NoFog.Value then
+                shared.Lighting["FoggyDay_Atmosphere"].Density = 0
+            end
+        end))
+    end
+
+    if Toggles.Fullbright.Value then
+        shared.Lighting.Ambient = Color3.new(1, 1, 1)
+        shared.Lighting.ColorShift_Bottom = Color3.new(1, 1, 1)
+        shared.Lighting.ColorShift_Top = Color3.new(1, 1, 1)
+    end
+
+    if Toggles.NoFog.Value then
+        shared.Lighting.FogEnd = 9e9
+
+        if shared.Lighting:FindFirstChild("FoggyDay_Atmosphere") then
+            shared.Lighting["FoggyDay_Atmosphere"].Density = 0
         end
     end
 end
