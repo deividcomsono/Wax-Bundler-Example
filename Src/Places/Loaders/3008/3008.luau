@@ -82,8 +82,14 @@ Script._mspaint_custom_captions = Instance.new("ScreenGui") do
     end
 end
 
+function Script.Functions.IsNaN(x)
+    return x ~= x
+end
+
 function Script.Functions.Respawn()
-    shared.Character:BreakJoints()
+    if shared.Humanoid.Health > 0 or Script.Functions.IsNaN(shared.Humanoid.Health) then
+        shared.Character:BreakJoints()
+    end
 
     repeat task.wait(0.1) until Script.DeathScreen.BG.Visible
     

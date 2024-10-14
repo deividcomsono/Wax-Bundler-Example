@@ -17,6 +17,17 @@ function Script.Functions.SetupCharacterConnection(newCharacter)
 
     if shared.Humanoid then
         Script.LastSpeed = shared.Humanoid.WalkSpeed
+        Script.LastJumpPower = shared.Humanoid.UseJumpPower and shared.Humanoid.JumpPower or shared.Humanoid.JumpHeight
+
+        if Toggles.SpeedHack.Value then shared.Humanoid.WalkSpeed = Options.WalkSpeed.Value end
+        
+        if Toggles.JumpPowerHack.Value then
+            if shared.Humanoid.UseJumpPower then
+                shared.Humanoid.JumpPower = Options.JumpPower.Value
+            else
+                shared.Humanoid.JumpHeight = Options.JumpPower.Value
+            end
+        end
 
         shared.Connect:GiveSignal(shared.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
             if shared.Humanoid.WalkSpeed ~= Options.WalkSpeed.Value then
