@@ -30,6 +30,32 @@ local SelfGroupBox = Tabs.Visuals:AddRightGroupbox("Self") do
         Text = "No Fog",
         Default = false
     })
+
+    if wax.shared.ExecutorSupport["require"] then
+        SelfGroupBox:AddDivider()
+    end
+
+    SelfGroupBox:AddToggle("DeathWaypoint", {
+        Text = "Death Waypoint",
+        Default = false,
+        Visible = wax.shared.ExecutorSupport["require"]
+    })
+
+    SelfGroupBox:AddToggle("PersonalWatch", {
+        Text = "Personal Watch",
+        Default = false,
+        Visible = wax.shared.ExecutorSupport["require"]
+    })
+
+    SelfGroupBox:AddSlider("MaxWaypoints", {
+        Text = "Max Waypoints",
+        Default = if wax.shared.ExecutorSupport["require"] then require(Script.WaypointsMenu).waypoint_limit else 4,
+        Min = 0,
+        Max = 100,
+        Rounding = 0,
+        Compact = true,
+        Visible = wax.shared.ExecutorSupport["require"]
+    })
 end
 
 Options.FOV:OnChanged(function(value)
@@ -66,4 +92,29 @@ Toggles.NoFog:OnChanged(function(value)
             shared.Lighting["FoggyDay_Atmosphere"].Density = Script.CurrentFoggyDayDensity
         end
     end
+end)
+
+Toggles.PersonalWatch:OnChanged(function(Value)
+    if not wax.shared.ExecutorSupport["require"] then return end
+
+	while Toggles.PersonalWatch.Value and task.wait() do
+		Script.Calendar["Gamepass_Clock"].Text = require(shared.ReplicatedStorage.Modules.Date).GetTimeInClockFormat(Script.TimeLeft.Value)
+        
+        if Script.TimeLeft.Value == 5 then
+            Script.Calendar["Gamepass_Clock"].Countdown.Playing = true
+        end
+	end
+end)
+
+Toggles.DeathWaypoint:OnChanged(function(Value)
+    if not wax.shared.ExecutorSupport["require"] then return end
+
+	require(Script.WaypointsMenu).create_death = Value
+	require(Script.WaypointsMenu).death_waypoint = Value
+end)
+
+Toggles.MaxWaypoints:OnChanged(function(Value)
+    if not wax.shared.ExecutorSupport["require"] then return end
+
+	require(Script.WaypointsMenu).waypoint_limit = Value
 end)

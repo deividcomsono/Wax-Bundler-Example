@@ -150,30 +150,10 @@ function Script.Functions.SetupBloxstrapRPCConnection()
     if not wax.shared.BloxstrapRPC then return end
 
     shared.Connect:GiveSignal(Script.CurrentDay:GetPropertyChangedSignal("Text"):Connect(function()
-        wax.shared.BloxstrapRPC.SetRichPresence({
-            details = "Playing 3008 [ mspaint v2 ]",
-            state = Script.CurrentDay.Text:gsub("^%l", string.upper),
-            largeImage = {
-                hoverText = "Using mspaint v2"
-            },
-            smallImage = {
-                assetId = 6925817108,
-                hoverText = shared.LocalPlayer.Name
-            }
-        })
+        Script.Functions.UpdateBloxstrapRPC()
     end))
 
-    wax.shared.BloxstrapRPC.SetRichPresence({
-        details = "Playing 3008 [ mspaint v2 ]",
-        state = Script.CurrentDay.Text:gsub("^%l", string.upper),
-        largeImage = {
-            hoverText = "Using mspaint v2"
-        },
-        smallImage = {
-            assetId = 6925817108,
-            hoverText = shared.LocalPlayer.Name
-        }
-    })
+    Script.Functions.UpdateBloxstrapRPC()
 end
 
 function Script.Functions.SetupExploitInfModulesConnection()

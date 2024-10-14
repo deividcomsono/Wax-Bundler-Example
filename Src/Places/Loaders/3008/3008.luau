@@ -32,9 +32,17 @@ Script.DeathScreen = shared.PlayerGui:WaitForChild("DeathScreen")
 Script.Settings = shared.PlayerGui:WaitForChild("PlayerInfo"):WaitForChild("Settings")
 Script.MainGui = shared.PlayerGui:WaitForChild("MainGui")
 Script.PlayerStats = Script.MainGui:WaitForChild("PlayerStats")
-Script.CurrentDay = Script.MainGui:WaitForChild("TopBar"):WaitForChild("Calendar"):WaitForChild("Middle"):WaitForChild("CurrentDay")
 
-Script.ToolSystem = shared.PlayerScripts:WaitForChild("source"):WaitForChild("client"):WaitForChild("ToolSystem")
+Script.TopBar = Script.MainGui:WaitForChild("TopBar")
+Script.Calendar = Script.TopBar:WaitForChild("Calendar")
+Script.CurrentDay = Script.Calendar:WaitForChild("Middle"):WaitForChild("CurrentDay")
+Script.TimeLeft = shared.ReplicatedStorage:WaitForChild("ServerSettings"):WaitForChild("TimeSettings"):WaitForChild("TimeLeft")
+
+Script.Source = shared.PlayerScripts:WaitForChild("source")
+Script.Client = Script.Source:WaitForChild("client")
+
+Script.ToolSystem = Script.Client:WaitForChild("ToolSystem")
+Script.WaypointsMenu = Script.Client:WaitForChild("GUI"):WaitForChild("GuiMenus"):WaitForChild("Extras"):WaitForChild("WaypointsMenu")
 
 --// Functions \\--
 Script._mspaint_custom_captions = Instance.new("ScreenGui") do
@@ -135,6 +143,22 @@ end
 
 function Script.Functions.IsNaN(x)
     return x ~= x
+end
+
+function Script.Functions.UpdateBloxstrapRPC()
+    if not wax.shared.BloxstrapRPC then return end
+    
+    wax.shared.BloxstrapRPC.SetRichPresence({
+        details = "Playing 3008 [ mspaint v2 ]",
+        state = string.lower(Script.CurrentDay.Text):gsub("^%l", string.upper),
+        largeImage = {
+            hoverText = "Using mspaint v2"
+        },
+        smallImage = {
+            assetId = 6925817108,
+            hoverText = shared.LocalPlayer.Name
+        }
+    })
 end
 
 function Script.Functions.Respawn()
