@@ -46,6 +46,11 @@ local PlayerGroupBox = Tabs.Main:AddLeftGroupbox("Player") do
         Visible = wax.shared.ExecutorSupport["hookfunction"] and wax.shared.ExecutorSupport["getcallingscript"]
     })
 
+    PlayerGroupBox:AddToggle("NoFall", {
+        Text = "No Fall",
+        Default = false
+    })
+
     PlayerGroupBox:AddDivider()
 
     PlayerGroupBox:AddToggle("Noclip", {
@@ -126,6 +131,14 @@ Options.JumpPower:OnChanged(function(value)
         if shared.Humanoid.JumpHeight ~= value then
             if Toggles.JumpPowerHack.Value then shared.Humanoid.JumpHeight = value end
         end
+    end
+end)
+
+Toggles.NoFall:OnChanged(function(value)
+    local fallDamage = shared.Character and shared.Character:FindFirstChild("FallDamage")
+    
+    if fallDamage then
+        fallDamage.Enabled = not value
     end
 end)
 

@@ -35,5 +35,12 @@ function Script.Functions.SetupCharacterConnection(newCharacter)
         end))
     end
 
+    if Toggles.NoFall.Value then
+        local fallDamage = shared.Character:WaitForChild("FallDamage")
+        if fallDamage then
+            fallDamage.Enabled = false
+        end
+    end
+
     shared.RootPart = shared.Character:WaitForChild("HumanoidRootPart")
 end
