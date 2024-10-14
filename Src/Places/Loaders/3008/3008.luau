@@ -30,7 +30,9 @@ Script.Action = Script.System:WaitForChild("Action")
 
 Script.DeathScreen = shared.PlayerGui:WaitForChild("DeathScreen")
 Script.Settings = shared.PlayerGui:WaitForChild("PlayerInfo"):WaitForChild("Settings")
-Script.PlayerStats = shared.PlayerGui:WaitForChild("MainGui"):WaitForChild("PlayerStats")
+Script.MainGui = shared.PlayerGui:WaitForChild("MainGui")
+Script.PlayerStats = Script.MainGui:WaitForChild("PlayerStats")
+Script.CurrentDay = Script.MainGui:WaitForChild("TopBar"):WaitForChild("Calendar"):WaitForChild("Middle"):WaitForChild("CurrentDay")
 
 Script.ToolSystem = shared.PlayerScripts:WaitForChild("source"):WaitForChild("client"):WaitForChild("ToolSystem")
 
@@ -264,6 +266,7 @@ shared.Connect:GiveSignal(shared.Camera.ChildAdded:Connect(Script.Functions.Came
 task.spawn(Script.Functions.SetupCharacterConnection, shared.Character)
 task.spawn(Script.Functions.SetupLightingConnection)
 task.spawn(Script.Functions.SetupExploitInfModulesConnection)
+task.spawn(Script.Functions.SetupBloxstrapRPCConnection)
 
 for _, child in pairs(shared.Camera:GetChildren()) do
     Script.Functions.CameraChildAdded(child)
@@ -277,6 +280,19 @@ shared.Library:OnUnload(function()
 
     if wax.shared.ExecutorSupport["hookmetamethod"] and wax.shared.ExecutorSupport["getnamecallmethod"] then
         hookmetamethod(game, "__namecall", shared.Hooks.mtHook)
+    end
+
+    if wax.shared.BloxstrapRPC then
+        wax.shared.BloxstrapRPC.SetRichPresence({
+            details = "<reset>",
+            state = "<reset>",
+            largeImage = {
+                reset = true
+            },
+            smallImage = {
+                reset = true
+            }
+        })
     end
 end)
 

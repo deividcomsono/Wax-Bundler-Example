@@ -64,3 +64,13 @@ function Script.Functions.SetupOtherPlayerConnection(player: Player)
         end)
     end))
 end
+
+function Script.Functions.SetupBloxstrapRPCConnection()
+    shared.Connect:GiveSignal(shared.Players.PlayerAdded:Connect(function(player)
+        Script.Functions.UpdateBloxstrapRPC()
+    end))
+
+    shared.Connect:GiveSignal(shared.Players.PlayerRemoving:Connect(function(player)
+        Script.Functions.UpdateBloxstrapRPC()
+    end))
+end

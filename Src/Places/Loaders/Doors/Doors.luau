@@ -1385,7 +1385,7 @@ shared.Library:OnUnload(function()
         table.clear(Script.FakeRevive.Connections)
     end
 
-    if getgenv().BloxstrapRPC then
+    if wax.shared.BloxstrapRPC then
         wax.shared.BloxstrapRPC.SetRichPresence({
             details = "<reset>",
             state = "<reset>",

@@ -16,8 +16,25 @@ Script.ESPTable = {
 }
 
 shared.Character = shared.LocalPlayer.Character or shared.LocalPlayer.CharacterAdded:Wait()
+Script.GameName = "a roblox experience"
 
 --// Functions \\--
+function Script.Functions.UpdateBloxstrapRPC()
+    if not wax.shared.BloxstrapRPC then return end
+
+    wax.shared.BloxstrapRPC.SetRichPresence({
+        details = "Playing " .. Script.GameName .. " [ mspaint v2 ]",
+        state = #shared.Players:GetPlayers() .. " players in the server",
+        largeImage = {
+            hoverText = "Using mspaint v2"
+        },
+        smallImage = {
+            assetId = 6925817108,
+            hoverText = shared.LocalPlayer.Name
+        }
+    })
+end
+
 shared.Load("Utils", "Assets")
 shared.Load("Utils", "ESP")
 
@@ -70,7 +87,31 @@ shared.Connect:GiveSignal(shared.RunService.RenderStepped:Connect(function()
 end))
 
 --// Load \\--
+local success, gameName = pcall(function()
+    return shared.MarketplaceService:GetProductInfo(game.PlaceId).Name
+end)
+
+if success then Script.GameName = gameName end
+Script.Functions.UpdateBloxstrapRPC()
+
 task.spawn(Script.Functions.SetupCharacterConnection, shared.Character)
 task.spawn(Script.Functions.SetupChildConnection)
+task.spawn(Script.Functions.SetupBloxstrapRPCConnection)
+
+--// Unload \\--
+shared.Library:OnUnload(function()
+    if wax.shared.BloxstrapRPC then
+        wax.shared.BloxstrapRPC.SetRichPresence({
+            details = "<reset>",
+            state = "<reset>",
+            largeImage = {
+                reset = true
+            },
+            smallImage = {
+                reset = true
+            }
+        })
+    end
+end)
 
 getgenv().mspaint_loaded = true

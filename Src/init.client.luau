@@ -22,7 +22,8 @@ Services:GetServices({
     "RunService",
     "SoundService",
     "TeleportService",
-    "TweenService"
+    "TweenService",
+    "MarketplaceService"
 })
 
 --// Utils \\--
