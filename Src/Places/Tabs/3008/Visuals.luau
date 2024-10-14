@@ -113,7 +113,7 @@ Toggles.DeathWaypoint:OnChanged(function(Value)
 	require(Script.WaypointsMenu).death_waypoint = Value
 end)
 
-Toggles.MaxWaypoints:OnChanged(function(Value)
+Options.MaxWaypoints:OnChanged(function(Value)
     if not wax.shared.ExecutorSupport["require"] then return end
 
 	require(Script.WaypointsMenu).waypoint_limit = Value
