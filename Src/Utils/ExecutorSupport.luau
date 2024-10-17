@@ -8,7 +8,7 @@ local brokenFeatures = {
     ["VegaX"] = { "require" },
 }
 
-function test(name: string, func: () -> (), shouldCallback: boolean)
+function test(name: string, func: (any), shouldCallback: boolean | nil): boolean
     if typeof(brokenFeatures[executorName]) == "table" and table.find(brokenFeatures[executorName], name) then return false end -- garbage executor 🤯
     
     local success, errorMessage = false, nil
@@ -33,7 +33,6 @@ test("isfolder", isfolder, false)
 test("delfile", delfile, false)
 test("delfolder", delfolder, false)
 test("loadfile", loadfile, false)
-
 test("queue_on_teleport", queue_on_teleport, false)
 test("getcallingscript", getcallingscript, false)
 

@@ -14,7 +14,7 @@ local PlayerGroupBox = Tabs.Main:AddLeftGroupbox("Player") do
         Text = "Speed Hack",
         Default = false
     })
-
+    
     PlayerGroupBox:AddSlider("WalkSpeed", {
         Text = "Walk Speed",
         Default = 16,
